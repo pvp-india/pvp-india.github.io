@@ -1,256 +1,255 @@
-from pathlib import Path
-import re
-
-src = Path("/mnt/data/pvp_india_competitive_hub.html")
-if not src.exists():
-    candidates = list(Path("/mnt/data").glob("*.html"))
-    raise FileNotFoundError(f"Could not find pvp_india_competitive_hub.html. Available HTML files: {[p.name for p in candidates]}")
-
-html = src.read_text(encoding="utf-8", errors="replace")
-
-# Neutral grayscale theme; keep the original site's layout and features.
-html = html.replace("#ff2b2b", "#a3a3a3").replace("#ff3333", "#a3a3a3").replace("#ff0000", "#a3a3a3")
-html = html.replace("#ff4d4d", "#b8b8b8").replace("#e60000", "#8a8a8a").replace("#cc0000", "#777777")
-
-neutral_css = r"""
-<style id="pvp-neutral-refresh">
-:root {
-  --pvp-bg: #090909;
-  --pvp-panel: #151515;
-  --pvp-panel-2: #202020;
-  --pvp-border: #383838;
-  --pvp-text: #d0d0d0;
-  --pvp-muted: #8d8d8d;
-  --pvp-accent: #a7a7a7;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Real Tiers - Rankings</title>
+<link rel="icon" href="tier.png">
+<script src="https://cdn.discordapp.com/icons/896903597709754398/eb1a1048d3f7fb738dd1849163025c0b.png?size=256"></script>
+<style>
+:root{
+  --bg:#100d0b; --panel:#1b1714; --panel2:#241d17; --gold:#e8b64c;
+  --gold2:#ffd879; --muted:#b5a58e; --line:#49351d; --text:#fff5df;
+  --red:#8f4b2c; --green:#668c54;
 }
-html { scroll-behavior: smooth; scrollbar-color: #686868 #111; }
-body {
-  background: #090909 !important;
-  color: #bdbdbd !important;
-}
-body::before, body::after { animation: none !important; }
-* { scrollbar-width: thin; scrollbar-color: #686868 #111; }
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: #111 !important; }
-::-webkit-scrollbar-thumb { background: #686868 !important; border-radius: 8px; border: 1px solid #111; }
-::-webkit-scrollbar-thumb:hover { background: #9a9a9a !important; }
-#bgCanvas, #emberCanvas, canvas#particles, .particle-background, .particles-bg { display: none !important; }
-button, a, input, select, textarea { accent-color: #999; }
-button, .btn, .button { transition: transform .22s ease, border-color .22s ease, background .22s ease, box-shadow .22s ease; }
-button:hover, .btn:hover, .button:hover { border-color: #aaa !important; }
-h1, h2, h3, h4, p, label, span, a, li, small, strong { text-shadow: none; }
-.text-red-500, .text-red-400, .text-red-600 { color: #b5b5b5 !important; }
-.bg-red-600, .bg-red-500, .bg-red-700 { background-color: #4b4b4b !important; }
-.border-red-500, .border-red-600, .border-red-400 { border-color: #777 !important; }
-.shadow-red-500\/50, .shadow-red-500\/30 { box-shadow: 0 0 18px #ffffff0a !important; }
-.pvp-neutral-panel { background: linear-gradient(145deg,#171717,#0d0d0d); border: 1px solid #343434; border-radius: 16px; }
-#pvpLoginModal, #pvpAdminPlayersPanel { color: #ccc; }
-#pvpLoginModal input, #pvpAdminPlayersPanel input { background: #101010; color: #ddd; border: 1px solid #414141; border-radius: 8px; padding: 10px 12px; width: 100%; }
-#pvpLoginModal button, #pvpAdminPlayersPanel button { background: #303030; border: 1px solid #555; color: #eee; border-radius: 8px; padding: 9px 13px; cursor: pointer; }
-#pvpLoginModal button:hover, #pvpAdminPlayersPanel button:hover { background: #444; }
-#pvpLoginTrigger { border: 1px solid #666; color: #ddd; background: #202020; padding: 9px 15px; border-radius: 9px; font-weight: 700; }
-#pvpMinecraftCharacter { width: min(100%, 520px); height: 390px; margin: auto; cursor: grab; touch-action: pan-y; }
-#pvpMinecraftCharacter:active { cursor: grabbing; }
-.pvp-admin-row { display:flex; gap:12px; align-items:center; justify-content:space-between; padding:10px; border-bottom:1px solid #333; }
-.pvp-admin-row button { white-space:nowrap; }
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(ellipse at 50% -20%,#503719 0%,#21170f 32%,#100d0b 70%);color:var(--text);font-family:Inter,system-ui,Arial,sans-serif}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.16;z-index:-1;background-image:linear-gradient(45deg,transparent 46%,#e8b64c 47%,transparent 49%),linear-gradient(-45deg,transparent 46%,#8d5c27 47%,transparent 49%);background-size:34px 34px}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer}
+.topbar{height:76px;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(18px,5vw,76px);background:#0b0908eF;border-bottom:1px solid #6e4d22;position:sticky;top:0;z-index:10;backdrop-filter:blur(12px)}
+.brand{display:flex;align-items:center;gap:12px;font-weight:1000;letter-spacing:1.5px}
+.brand-mark{width:42px;height:42px;display:grid;place-items:center;background:linear-gradient(145deg,#f7d16e,#9b5d1d);color:#160f08;border:3px solid #6f491b;box-shadow:inset 0 0 0 2px #ffe7a0;font-size:21px;transform:rotate(-3deg);overflow:hidden}.brand-mark.skin-mark{background:#111;border-color:#8c692f;box-shadow:none;transform:none}.skin-mark img{width:100%;height:100%;object-fit:cover;image-rendering:pixelated}
+.brand small{display:block;color:#d3a64e;font-size:10px;letter-spacing:3px;margin-top:2px}
+.nav{display:flex;align-items:center;gap:9px}
+.nav button,.discord{border:1px solid transparent;color:#c9b99e;background:transparent;padding:11px 16px;font-weight:800;border-radius:5px;letter-spacing:.4px}
+.nav button.active,.nav button:hover{background:#2b2115;color:var(--gold2);border-color:#674a24}
+.discord{display:inline-flex;align-items:center;gap:8px;background:transparent;color:#c9b99e;border:0;margin-left:8px;padding:10px 4px;font-weight:900;box-shadow:none}
+.discord:hover{color:#fff;transform:translateY(-1px)}
+.discord-icon{width:23px;height:23px;display:block;flex-shrink:0}
+.page{display:none;animation:appear .35s ease}
+.page.active{display:block}
+@keyframes appear{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+/* HOME HERO — gilded blackstone palette */
+.hero{min-height:560px;position:relative;overflow:hidden;display:grid;grid-template-columns:1.15fr .85fr;align-items:center;gap:36px;padding:76px clamp(20px,8vw,120px);border-bottom:1px solid #5c421f;background:
+linear-gradient(90deg,rgba(12,10,9,.96) 0%,rgba(20,15,11,.88) 49%,rgba(20,13,8,.42) 100%),
+repeating-linear-gradient(0deg,transparent 0 47px,rgba(231,177,68,.09) 48px 50px),
+repeating-linear-gradient(90deg,#201914 0 47px,#3c2a18 48px 50px);}
+.hero:before{content:"";position:absolute;right:-65px;top:4%;width:48%;height:100%;opacity:.8;background:
+linear-gradient(135deg,transparent 0 20%,#7d4e20 20% 24%,#18110c 24% 42%,#b07a2b 42% 46%,#21160d 46% 64%,#7d4e20 64% 68%,transparent 68%),
+linear-gradient(45deg,#17110d 0 24%,#5b391b 24% 28%,#17110d 28% 52%,#a16b27 52% 56%,#21150b 56% 78%,#5d3a1c 78% 82%,#17110d 82%);clip-path:polygon(50% 0,100% 0,100% 100%,0 100%);filter:drop-shadow(0 0 35px #d39b3822);mask-image:linear-gradient(90deg,transparent,#000 22%)}
+.hero:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,transparent 82%,#100d0b 100%)}
+.hero-copy,.hero-art{position:relative;z-index:1}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;color:var(--gold2);font-size:11px;letter-spacing:3px;font-weight:1000;text-transform:uppercase;border:1px solid #76501f;padding:9px 12px;background:#1b130bc9}
+.eyebrow:before{content:"";width:7px;height:7px;background:#e6b547;box-shadow:0 0 12px #ffc85c;transform:rotate(45deg)}
+h1{font-size:clamp(48px,7vw,88px);line-height:.92;letter-spacing:-3px;margin:25px 0 22px;text-transform:uppercase;font-weight:1000;text-shadow:5px 5px 0 #392516}
+h1 span{color:var(--gold2);display:block}
+.hero-copy p{color:#cbbba3;max-width:520px;font-size:16px;line-height:1.8}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+.btn{border:1px solid #9e702e;background:linear-gradient(180deg,#f0c45f,#b87825);color:#1b1006;font-weight:1000;padding:15px 20px;letter-spacing:1px;text-transform:uppercase;box-shadow:0 5px 0 #5b3919;transition:.2s}
+.btn:hover{transform:translateY(-3px);box-shadow:0 8px 0 #5b3919}
+.btn.secondary{background:#211a14;color:#f2d28b;border-color:#5e472b;box-shadow:0 5px 0 #0a0807}
+.hero-art{display:flex;justify-content:center;align-items:center;min-height:300px}
+.block-card{width:min(340px,100%);aspect-ratio:1/1;position:relative;display:grid;place-items:center;transform:rotate(-5deg);background:linear-gradient(135deg,#473023,#16120f 40%,#302015 70%,#0c0a09);border:5px solid #715020;box-shadow:18px 22px 0 #080706,0 0 60px #dca33b26,inset 0 0 0 5px #17100b}
+.block-card:before{content:"";position:absolute;inset:13px;border:2px solid #a9782f;background:repeating-linear-gradient(0deg,transparent 0 43px,#d7a44935 44px 47px),repeating-linear-gradient(90deg,transparent 0 43px,#d7a44935 44px 47px)}
+.block-glyph{font-size:clamp(100px,15vw,165px);filter:drop-shadow(8px 10px 0 #080706);z-index:1}.itzrealme-skin{width:72%;height:72%;object-fit:contain;image-rendering:pixelated;z-index:1;filter:drop-shadow(8px 10px 0 #080706)}
+#heroSkinCanvas{width:78%;height:78%;z-index:1;display:block;filter:drop-shadow(8px 10px 0 #080706)}
+.block-label{position:absolute;bottom:22px;z-index:2;background:#0d0a08;border:1px solid #b58131;color:#f9d681;padding:9px 16px;font-size:11px;font-weight:1000;letter-spacing:3px}
+.ticker{display:flex;gap:0;overflow:hidden;border-bottom:1px solid #5b411e;background:#1b140d}
+.ticker span{white-space:nowrap;padding:13px 28px;color:#d7b46e;font-size:11px;font-weight:1000;letter-spacing:2px;border-right:1px solid #4d361b}
+.ticker b{color:#fff0c3;margin-right:8px}
+.section{padding:64px clamp(18px,7vw,100px)}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:18px;margin-bottom:28px}
+.kicker{color:#d3a044;letter-spacing:3px;font-size:10px;font-weight:1000;text-transform:uppercase}
+h2{margin:9px 0 0;font-size:clamp(27px,4vw,42px);letter-spacing:-1px;text-transform:uppercase}
+.section-head p{margin:0;color:#a99a83;font-size:13px;max-width:300px;line-height:1.6}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.stat{padding:23px;background:linear-gradient(145deg,#292016,#17120e);border:1px solid #5c4221;position:relative;overflow:hidden}
+.stat:after{content:"";position:absolute;width:70px;height:70px;right:-24px;top:-25px;border:10px solid #b7813025;transform:rotate(45deg)}
+.stat strong{font-size:34px;color:#f1c766;display:block}
+.stat span{color:#b9a88e;font-size:10px;font-weight:900;letter-spacing:2px}
+.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.feature{background:#1b1611;border:1px solid #4c371e;padding:25px;min-height:170px}
+.feature .ico{font-size:28px;margin-bottom:16px}
+.feature h3{margin:0 0 8px;color:#f1ce7a;text-transform:uppercase;letter-spacing:1px}
+.feature p{margin:0;color:#b8a990;font-size:13px;line-height:1.65}
+.ip-strip{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:24px 28px;background:linear-gradient(100deg,#2c2114,#17120e);border:1px solid #866027;margin-top:28px}
+.ip-strip small{display:block;color:#b39c76;font-size:10px;letter-spacing:2px;font-weight:900;margin-bottom:7px}
+.ip{font-size:clamp(18px,3vw,27px);font-weight:1000;letter-spacing:1px;color:#ffe09a}
+.copy{background:#f0c35e;border:0;color:#211406;font-weight:1000;padding:13px 17px;min-width:100px}
+.copy:hover{background:#ffe19a}
+.list-head{padding:42px clamp(18px,6vw,88px) 30px;background:#050505;border-bottom:1px solid #303030;position:relative;overflow:hidden}
+.list-head:after{content:"";display:none}
+.list-head h1{font-size:clamp(36px,5vw,60px);margin:14px 0}
+.list-head p{color:#aaa;margin:0;max-width:600px;line-height:1.7}
+.controls{padding:20px clamp(18px,6vw,88px);background:#080808;border-bottom:1px solid #292929;display:flex;flex-wrap:wrap;gap:9px;align-items:center}
+.search{flex:1;min-width:220px;background:#111;color:#f5f5f5;border:1px solid #3c3c3c;padding:13px 15px;outline:none}
+.search:focus{border-color:#aaa}
+.mode{padding:11px 14px;background:#111;border:1px solid #333;color:#bbb;font-size:11px;font-weight:1000;text-transform:uppercase}
+.mode.active,.mode:hover{background:#e5e5e5;color:#080808;border-color:#e5e5e5}
+.table-wrap{padding:22px clamp(10px,4vw,55px) 70px;overflow-x:auto;background:#050505}
+table{width:100%;border-collapse:separate;border-spacing:0;min-width:900px;background:#090909;border:1px solid #303030}
+th{padding:16px 14px;background:#171717;color:#f0f0f0;text-align:left;text-transform:uppercase;font-size:10px;letter-spacing:1.5px;border-bottom:1px solid #383838}
+td{padding:14px;border-bottom:1px solid #242424;color:#dedede;font-size:13px}
+tbody tr:hover{background:#171717}
+tbody tr:last-child td{border-bottom:0}
+.rank{font-size:19px;font-weight:1000;color:#f0f0f0}
+.player{display:flex;align-items:center;gap:12px;font-weight:900;white-space:nowrap}
+.head-icon{width:34px;height:34px;background:#151515;border:1px solid #444;display:block;object-fit:cover;image-rendering:pixelated;flex-shrink:0}
+.premium{color:#ffcf67;font-size:9px;letter-spacing:1px;border:1px solid #8b6428;padding:4px 6px;margin-left:6px}
+.tier{display:inline-block;padding:6px 9px;min-width:58px;text-align:center;font-weight:1000;font-size:11px;background:#151515;border:1px solid #444;color:#ddd}
+.tier.ht{background:#292929;color:#fff;border-color:#888}
+.tier.lt{background:#101010;color:#bbb;border-color:#555}
+.points{font-weight:1000;color:#f2f2f2}
+.overall{color:#fff;font-weight:1000}
+.empty{padding:45px;text-align:center;color:#aaa}
+footer{padding:26px clamp(18px,6vw,88px);display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;background:#090807;border-top:1px solid #4a351d;color:#8f8068;font-size:11px;letter-spacing:1px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,20px);opacity:0;background:#e8b64c;color:#1b1106;padding:12px 20px;font-weight:1000;z-index:50;transition:.25s;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:850px){.hero{grid-template-columns:1fr;padding-top:58px;padding-bottom:45px}.hero-art{min-height:240px}.block-card{width:230px}.stat-grid{grid-template-columns:repeat(2,1fr)}.feature-grid{grid-template-columns:1fr}.nav{gap:2px}.nav button{padding:9px 10px}.brand small{letter-spacing:1px}}
+@media(max-width:540px){.topbar{padding:0 12px;height:68px}.brand{gap:7px;font-size:12px}.brand-mark{width:35px;height:35px}.nav button{font-size:10px;padding:9px 7px}.discord{font-size:10px;padding:8px 2px;margin-left:2px}.discord-icon{width:20px;height:20px}.hero{padding-left:20px;padding-right:20px;min-height:unset}h1{letter-spacing:-2px}.section-head{display:block}.section-head p{margin-top:12px}.ip-strip{align-items:flex-start;flex-direction:column}.copy{width:100%}.stat{padding:17px}.stat strong{font-size:28px}}
 </style>
-"""
-if "</head>" in html:
-    html = html.replace("</head>", neutral_css + "\n</head>", 1)
-else:
-    html = neutral_css + html
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#" onclick="showPage('home');return false">
+    <span class="brand-mark skin-mark"><img src="https://cdn.discordapp.com/icons/896903597709754398/eb1a1048d3f7fb738dd1849163025c0b.png?size=256" alt="Real Tier Minecraft tier"></span><span>REAL TIERS<small>MINECRAFT RANKINGS</small></span>
+  </a>
+  <nav class="nav">
+    <button class="active" id="nav-home" onclick="showPage('home')">HOME</button>
+    <button id="nav-tiers" onclick="showPage('tiers')">TIER LIST</button>
+    <a class="discord" href="https://discord.gg/QEVPu6pnh" target="_blank" rel="noopener"><svg class="discord-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19.7 5.2a18.7 18.7 0 0 0-4.6-1.4l-.6 1.2a17.2 17.2 0 0 0-5 0L8.9 3.8a18.7 18.7 0 0 0-4.6 1.4C1.4 9.5.6 13.7 1 17.9a18.9 18.9 0 0 0 5.7 2.9l1.2-2a12 12 0 0 1-1.9-.9l.5-.4a13.4 13.4 0 0 0 11 0l.5.4a12 12 0 0 1-1.9.9l1.2 2a18.9 18.9 0 0 0 5.7-2.9c.5-4.9-.8-9.1-3.3-12.7ZM8.8 14.8c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2Zm6.4 0c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2Z"/></svg><span>Discord</span></a>
+  </nav>
+</header>
 
-# Remove the old animated ember/point background initializer and canvas element where safely identifiable.
-html = re.sub(r'<canvas[^>]+id=["\']bgCanvas["\'][^>]*>\s*</canvas>', '', html, flags=re.I)
-html = re.sub(r'(?m)^\s*initEmberCanvas\(\);\s*$', '// Animated point background disabled for the neutral static theme.', html)
-
-# Add a header login trigger near the existing OP Panel button if possible.
-login_button = '<button id="pvpLoginTrigger" type="button" onclick="pvpOpenLogin()">LOGIN</button>'
-if 'id="pvpLoginTrigger"' not in html:
-    op_match = re.search(r'<button[^>]*(?:openAdminModal|OP Panel|OP PANEL)[\s\S]{0,300?</button>', html, re.I)
-    if op_match:
-        html = html[:op_match.end()] + "\n" + login_button + html[op_match.end():]
-    else:
-        # Insert into a header/nav if we cannot reliably locate the existing OP button.
-        nav_end = re.search(r'</nav>', html, re.I)
-        header_end = re.search(r'</header>', html, re.I)
-        target = nav_end or header_end
-        if target:
-            html = html[:target.start()] + login_button + "\n" + html[target.start():]
-
-# Add login portal, admin management panel, and interaction script before body close.
-addon = r"""
-<div id="pvpLoginModal" role="dialog" aria-modal="true" aria-labelledby="pvpLoginTitle" style="display:none;position:fixed;inset:0;z-index:99999;background:#000c;align-items:center;justify-content:center;padding:20px">
-  <div class="pvp-neutral-panel" style="width:min(100%,420px);padding:24px;box-shadow:0 20px 80px #000">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
-      <h2 id="pvpLoginTitle" style="margin:0;color:#eee">Player Login</h2>
-      <button type="button" onclick="pvpCloseLogin()" aria-label="Close login">✕</button>
+<main>
+<section id="home" class="page active">
+  <div class="hero">
+    <div class="hero-copy">
+      <div class="eyebrow">THE COMMUNITY RANKING HUB</div>
+      <h1>REAL<br><span>TIERS.</span></h1>
+      <p>Player rankings forged in the Nether. Check each gamemode, compare tiers, and find the names climbing the Real Tiers leaderboard.</p>
+      <div class="actions">
+        <button class="btn" onclick="showPage('tiers')">⚒ Explore Rankings</button>
+        <button class="btn secondary" onclick="copyIP()">▣ Copy Server IP</button>
+      </div>
     </div>
-    <p style="color:#999;font-size:13px">Local demo portal for this single-page prototype.</p>
-    <form id="pvpLoginForm" onsubmit="return pvpHandleLogin(event)" style="display:grid;gap:12px">
-      <label>Username<input id="pvpLoginName" maxlength="24" required autocomplete="username" placeholder="Minecraft username"></label>
-      <label>Password<input id="pvpLoginPassword" type="password" required autocomplete="current-password" placeholder="Demo password"></label>
-      <button type="submit">Sign in</button>
-      <p id="pvpLoginMessage" aria-live="polite" style="margin:0;color:#999;font-size:13px"></p>
-    </form>
+    <div class="hero-art" aria-label="Decorative Minecraft-inspired block">
+      <div class="block-card"><canvas id="heroSkinCanvas" aria-label="3D Minecraft DarkWarriorXO model"></canvas><div class="block-label">REAL TIERS</div></div>
+    </div>
   </div>
-</div>
-<script id="pvpNeutralAdminEnhancements">
-(function () {
-  const $ = (id) => document.getElementById(id);
-  window.pvpOpenLogin = function(){ const m=$('pvpLoginModal'); if(m){m.style.display='flex';$('pvpLoginMessage').textContent='';setTimeout(()=>$('pvpLoginName').focus(),30);} };
-  window.pvpCloseLogin = function(){ const m=$('pvpLoginModal'); if(m)m.style.display='none'; };
-  window.pvpHandleLogin = function(e){
-    e.preventDefault();
-    const name=($('pvpLoginName').value||'').trim();
-    const password=$('pvpLoginPassword').value||'';
-    if(!/^[A-Za-z0-9_]{3,24}$/.test(name)){ $('pvpLoginMessage').textContent='Use a 3–24 character Minecraft username.'; return false; }
-    // Front-end demo only: never use this for real account authentication.
-    if(password.length<1){ $('pvpLoginMessage').textContent='Enter a password.'; return false; }
-    try { localStorage.setItem('pvpIndiaDemoUser', JSON.stringify({name:name, signedInAt:Date.now()})); } catch(_){}
-    $('pvpLoginMessage').textContent='Signed in locally as '+name+'. This demo does not verify a real account.';
-    setTimeout(pvpCloseLogin,1100);
-    const trigger=$('pvpLoginTrigger'); if(trigger)trigger.textContent=name;
-    return false;
-  };
-  const adminAnchor = document.querySelector('#adminModal .modal-content, #adminModal .modal-body, #adminModal .admin-content, #adminModal');
-  if(adminAnchor && !$('pvpAdminPlayersPanel')){
-    const panel=document.createElement('section'); panel.id='pvpAdminPlayersPanel'; panel.className='pvp-neutral-panel';
-    panel.style.cssText='margin-top:18px;padding:16px;color:#ccc';
-    panel.innerHTML='<h3 style="margin:0 0 12px;color:#eee">OP Admin · Player Manager</h3><form id="pvpAdminAddForm" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px;margin-bottom:14px"><input id="pvpAdminNewName" maxlength="24" placeholder="Player username" required><input id="pvpAdminNewTier" maxlength="30" placeholder="Tier (e.g. HT1)"><input id="pvpAdminNewPoints" type="number" min="0" max="1000000" placeholder="Points" value="0"><button type="submit">Add player</button></form><div id="pvpAdminPlayerList"></div><p style="font-size:12px;color:#888;margin:12px 0 0">Local browser storage only. Client-side admin controls are not secure for production.</p>';
-    adminAnchor.appendChild(panel);
-    const form=$('pvpAdminAddForm');
-    form.addEventListener('submit',function(e){
-      e.preventDefault();
-      const name=$('pvpAdminNewName').value.trim();
-      const tier=$('pvpAdminNewTier').value.trim()||'Unranked';
-      const points=Number($('pvpAdminNewPoints').value||0);
-      if(!/^[A-Za-z0-9_]{3,24}$/.test(name)||!Number.isFinite(points)||points<0){alert('Enter a valid username and non-negative points.');return;}
-      const db=pvpGetPlayers();
-      if(db.some(p=>String(p.username||p.name||'').toLowerCase()===name.toLowerCase())){alert('That player already exists.');return;}
-      db.push({username:name,name:name,tier:tier,points:points});
-      pvpSavePlayers(db); form.reset(); $('pvpAdminNewPoints').value='0'; pvpRenderAdminPlayers();
-      if(typeof window.renderLeaderboard==='function')window.renderLeaderboard();
-      else if(typeof window.renderPlayers==='function')window.renderPlayers();
-    });
-    pvpRenderAdminPlayers();
-  }
-  function pvpGetPlayers(){
-    try { const saved=localStorage.getItem('pvpIndiaPlayers'); if(saved)return JSON.parse(saved); } catch(_){}
-    if(Array.isArray(window.playersDatabase))return window.playersDatabase;
-    return [];
-  }
-  function pvpSavePlayers(db){
-    try { localStorage.setItem('pvpIndiaPlayers',JSON.stringify(db)); } catch(_){}
-    if(Array.isArray(window.playersDatabase)){ window.playersDatabase.splice(0,window.playersDatabase.length,...db); }
-  }
-  window.pvpRenderAdminPlayers=function(){
-    const list=$('pvpAdminPlayerList'); if(!list)return;
-    const db=pvpGetPlayers();
-    list.innerHTML='';
-    if(!db.length){list.innerHTML='<p style="color:#888">No players found in the local database yet.</p>';return;}
-    db.forEach((p,i)=>{
-      const row=document.createElement('div');row.className='pvp-admin-row';
-      const info=document.createElement('div');
-      const name=String(p.username||p.name||p.player||'Unknown');
-      info.innerHTML='<strong style="color:#ddd"></strong><div style="color:#888;font-size:12px"></div>';
-      info.firstChild.textContent=name;
-      info.lastChild.textContent=String(p.tier||p.rank||'Unranked')+' · '+String(p.points||0)+' points';
-      const del=document.createElement('button');del.type='button';del.textContent='Remove';
-      del.addEventListener('click',function(){
-        if(!confirm('Remove '+name+' from the local player list?'))return;
-        const next=pvpGetPlayers();next.splice(i,1);pvpSavePlayers(next);pvpRenderAdminPlayers();
-        if(typeof window.renderLeaderboard==='function')window.renderLeaderboard();
-        else if(typeof window.renderPlayers==='function')window.renderPlayers();
-      });
-      row.append(info,del);list.appendChild(row);
-    });
-  };
-  // Smooth pointer-drag rotation for the existing mode carousel.
-  function enableDragCarousel(){
-    const el=document.querySelector('#carousel, .carousel, .gamemode-carousel, #gameModeCarousel, .mode-carousel');
-    if(!el||el.dataset.pvpDragEnabled)return;
-    el.dataset.pvpDragEnabled='1'; el.style.cursor='grab'; el.style.touchAction='pan-y';
-    let down=false,startX=0,lastX=0,rot=0;
-    el.addEventListener('pointerdown',e=>{down=true;startX=e.clientX;lastX=e.clientX;el.setPointerCapture&&el.setPointerCapture(e.pointerId);el.style.cursor='grabbing';});
-    el.addEventListener('pointermove',e=>{
-      if(!down)return;
-      const dx=e.clientX-lastX;lastX=e.clientX;rot+=dx*.65;
-      const items=el.querySelectorAll('.carousel-item, .mode-card, .gamemode-card, [data-mode-card]');
-      if(items.length){items.forEach((item,i)=>{item.style.transition='transform .08s linear';item.style.transform='rotateY('+(i*360/items.length+rot)+'deg) translateZ(180px)';});}
-      else {el.style.transform='perspective(900px) rotateY('+rot+'deg)';}
-    });
-    function end(){down=false;el.style.cursor='grab';}
-    el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);el.addEventListener('lostpointercapture',end);
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',enableDragCarousel);else enableDragCarousel();
-  // Reuse the existing Three.js scene if present; otherwise create a standalone voxel character canvas.
-  function addMinecraftCharacter(){
-    const candidates=['home','hero','heroSection','hero-section','home-section'];
-    let host=null;
-    for(const id of candidates){const n=$(id);if(n){host=n;break;}}
-    if(!host)host=document.querySelector('main')||document.body;
-    if($('pvpMinecraftCharacter'))return;
-    const wrap=document.createElement('div');wrap.style.cssText='max-width:520px;margin:22px auto;text-align:center';
-    const canvas=document.createElement('canvas');canvas.id='pvpMinecraftCharacter';canvas.width=800;canvas.height=600;canvas.setAttribute('aria-label','Interactive 3D-style Minecraft character; drag to rotate');
-    wrap.appendChild(canvas);
-    const caption=document.createElement('div');caption.textContent='3D MINECRAFT PLAYER · DRAG TO ROTATE';caption.style.cssText='font-size:11px;letter-spacing:2px;color:#888;margin-top:4px';wrap.appendChild(caption);
-    host.appendChild(wrap);
-    const ctx=canvas.getContext('2d');let angle=-.35,drag=false,last=0;
-    function cube(x,y,w,h,depth,front,side,top){
-      ctx.fillStyle=top;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+depth,y-depth*.55);ctx.lineTo(x+w+depth,y-depth*.55);ctx.lineTo(x+w,y);ctx.closePath();ctx.fill();
-      ctx.fillStyle=side;ctx.beginPath();ctx.moveTo(x+w,y);ctx.lineTo(x+w+depth,y-depth*.55);ctx.lineTo(x+w+depth,y+h-depth*.55);ctx.lineTo(x+w,y+h);ctx.closePath();ctx.fill();
-      ctx.fillStyle=front;ctx.fillRect(x,y,w,h);
-    }
-    function draw(){
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      const g=ctx.createRadialGradient(400,280,20,400,280,290);g.addColorStop(0,'#353535');g.addColorStop(1,'#09090900');ctx.fillStyle=g;ctx.fillRect(0,0,800,600);
-      const s=Math.sin(angle),c=Math.cos(angle),shift=s*24,shade=Math.max(.45,(c+1)/2);
-      ctx.save();ctx.translate(400,110);
-      // Legs
-      cube(-48+shift*.25,285,42,125,20,'#333','#242424','#494949');
-      cube(8-shift*.25,285,42,125,20,'#444','#292929','#555');
-      // Body and arms
-      cube(-63,155,126,132,28,'#565656','#353535','#737373');
-      cube(-100+shift*.2,165,32,115,17,'#777','#444','#8b8b8b');
-      cube(68-shift*.2,165,32,115,17,'#696969','#3b3b3b','#818181');
-      // Head
-      cube(-52+shift*.3,45,104,102,22,'#b0b0b0','#777','#d0d0d0');
-      ctx.fillStyle='#242424';ctx.fillRect(-32+shift*.3,83,15,13);ctx.fillRect(17+shift*.3,83,15,13);
-      ctx.fillStyle='#555';ctx.fillRect(-10+shift*.3,111,22,8);
-      // Armor accents
-      ctx.strokeStyle='#999';ctx.lineWidth=4;ctx.strokeRect(-62,155,124,132);
-      ctx.strokeStyle='#777';ctx.strokeRect(-51+shift*.3,44,102,102);
-      ctx.restore();
-      ctx.fillStyle='#888';ctx.font='14px monospace';ctx.textAlign='center';ctx.fillText('PVP INDIA',400,565);
-      requestAnimationFrame(draw);
-    }
-    let animating=true;
-    // Draw at a gentle idle angle; the model itself rotates on drag.
-    function frame(){if(!animating)return;drawOnce();requestAnimationFrame(frame);}
-    function drawOnce(){
-      ctx.clearRect(0,0,800,600);
-      const g=ctx.createRadialGradient(400,280,20,400,280,290);g.addColorStop(0,'#353535');g.addColorStop(1,'#09090900');ctx.fillStyle=g;ctx.fillRect(0,0,800,600);
-      const shift=Math.sin(angle)*24;
-      ctx.save();ctx.translate(400,100);
-      cube(-48+shift*.25,285,42,125,20,'#333','#242424','#494949');cube(8-shift*.25,285,42,125,20,'#444','#292929','#555');
-      cube(-63,155,126,132,28,'#565656','#353535','#737373');cube(-100+shift*.2,165,32,115,17,'#777','#444','#8b8b8b');cube(68-shift*.2,165,32,115,17,'#696969','#3b3b3b','#818181');
-      cube(-52+shift*.3,45,104,102,22,'#b0b0b0','#777','#d0d0d0');
-      ctx.fillStyle='#242424';ctx.fillRect(-32+shift*.3,83,15,13);ctx.fillRect(17+shift*.3,83,15,13);ctx.fillStyle='#555';ctx.fillRect(-10+shift*.3,111,22,8);
-      ctx.strokeStyle='#999';ctx.lineWidth=4;ctx.strokeRect(-62,155,124,132);ctx.restore();
-      ctx.fillStyle='#888';ctx.font='14px monospace';ctx.textAlign='center';ctx.fillText('PVP INDIA',400,565);
-    }
-    canvas.addEventListener('pointerdown',e=>{drag=true;last=e.clientX;canvas.setPointerCapture(e.pointerId);});
-    canvas.addEventListener('pointermove',e=>{if(!drag)return;angle+=(e.clientX-last)*.012;last=e.clientX;drawOnce();});
-    canvas.addEventListener('pointerup',()=>drag=false);canvas.addEventListener('pointercancel',()=>drag=false);
-    frame();
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',addMinecraftCharacter);else addMinecraftCharacter();
-})();
-</script>
-"""
-html = html.replace("</body>", addon + "\n</body>", 1) if "</body>" in html else html + addon
+  <div class="ticker"><span><b>◆</b> COMMUNITY RANKINGS</span><span><b>✦</b> MULTI-GAMEMODE RANKS</span><span><b>◆</b> COMMUNITY LEADERBOARD</span><span><b>✦</b> PLAY • PRACTICE • CLIMB</span></div>
+  <section class="section">
+    <div class="section-head"><div><div class="kicker">THE NETWORK</div><h2>Forged for fighters.</h2></div><p>A clear place to check player rankings, compare gamemodes, and follow the leaderboard.</p></div>
+    <div class="stat-grid">
+      <div class="stat"><strong id="player-count">10</strong><span>PLAYERS LISTED</span></div>
+      <div class="stat"><strong>12+</strong><span>GAMEMODES</span></div>
+      <div class="stat"><strong>HT1</strong><span>TOP TIER LEVEL</span></div>
+      <div class="stat"><strong>24/7</strong><span>COMMUNITY HUB</span></div>
+    </div>
+    <div class="ip-strip">
+      <div><small>JOIN THE SERVER</small><div class="ip" id="server-ip">play.mcpvp.com</div></div>
+      <button class="copy" onclick="copyIP()">COPY IP ↗</button>
+    </div>
+  </section>
+  <section class="section" style="padding-top:0">
+    <div class="section-head"><div><div class="kicker">HOW IT WORKS</div><h2>Three steps. One ladder.</h2></div></div>
+    <div class="feature-grid">
+      <article class="feature"><div class="ico">⚔️</div><h3>Pick a mode</h3><p>Switch between Vanilla, Sword, Mace, UHC, and the other listed modes to see the relevant rankings.</p></article>
+      <article class="feature"><div class="ico">🎫</div><h3>Read the tiers</h3><p>HT and LT badges separate the tier level at a glance. Overall tier and points make comparison easier.</p></article>
+      <article class="feature"><div class="ico">🏆</div><h3>Climb the list</h3><p>Find player entries, compare points, and use search to jump straight to a name.</p></article>
+    </div>
+  </section>
+</section>
 
-out = Path("/mnt/data/pvp_india_neutral_updated.html")
+<section id="tiers" class="page">
+  <div class="list-head"><div class="kicker">REAL TIERS / PLAYER INDEX</div><h1>THE TIER VAULT</h1><p>Browse players by gamemode, search names, and compare overall scores. Demo entries are clearly labelled where applicable.</p></div>
+  <div class="controls">
+    <input id="search" class="search" placeholder="Search a player..." oninput="renderTable()">
+    <button class="mode active" data-mode="All" onclick="setMode('All',this)">ALL MODES</button>
+    <button class="mode" data-mode="Vanilla" onclick="setMode('Vanilla',this)">VANILLA</button>
+    <button class="mode" data-mode="Sword" onclick="setMode('Sword',this)">SWORD</button>
+    <button class="mode" data-mode="Mace" onclick="setMode('Mace',this)">MACE</button>
+    <button class="mode" data-mode="UHC" onclick="setMode('UHC',this)">UHC</button>
+    <button class="mode" data-mode="Axe" onclick="setMode('Axe',this)">AXE</button>
+    <button class="mode" data-mode="Pot" onclick="setMode('Pot',this)">POT</button>
+    <button class="mode" data-mode="NethOP" onclick="setMode('NethOP',this)">NETHOP</button>
+    <button class="mode" data-mode="Crystal" onclick="setMode('Crystal',this)">CRYSTAL</button>
+    <button class="mode" data-mode="DiaSMP" onclick="setMode('DiaSMP',this)">DIASMP</button>
+    <button class="mode" data-mode="SMP" onclick="setMode('SMP',this)">SMP</button>
+    <button class="mode" data-mode="OG Vanilla" onclick="setMode('OG Vanilla',this)">OG VANILLA</button>
+    <button class="mode" data-mode="Bedrock" onclick="setMode('Bedrock',this)">BEDROCK</button>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>Player</th><th>Overall Tier</th><th id="mode-heading">Vanilla</th><th>Sword</th><th>Mace</th><th>UHC</th><th>Total Points</th></tr></thead>
+      <tbody id="table-body"></tbody>
+    </table>
+  </div>
+</section>
+</main>
+<footer><span>◆ REAL TIERS — COMMUNITY RANKINGS</span><span>COMMUNITY RANKINGS • FAN-MADE SITE</span><span>Not affiliated with Mojang or Microsoft.</span></footer>
+<div class="toast" id="toast">Copied!</div>
+<script>
+const players=[
+{name:"DarkwarriorXO",premium:true,vanilla:"HT4",sword:"LT4",mace:"HT4",uhc:"LT4",points:370},
+{name:"Chiraggaming",vanilla:"—",sword:"HT5",mace:"HT5",uhc:"—",points:180},
+{name:"Ghoulking",vanilla:"HT5",sword:"HT4",mace:"LT4",uhc:"—",points:250},
+{name:"UI_INDRA",vanilla:"HT5",sword:"HT5",mace:"HT4",uhc:"—",points:220},
+{name:"Nageshliveff",vanilla:"HT5",sword:"LT5",mace:"LT5",uhc:"—",points:120},
+{name:"BlockVortex",vanilla:"HT4",sword:"LT4",mace:"HT5",uhc:"—",points:290,demo:true},
+{name:"FrostBytePvP",vanilla:"LT4",sword:"HT5",mace:"—",uhc:"LT5",points:245,demo:true},
+{name:"QuartzKnight",vanilla:"—",sword:"HT4",mace:"LT5",uhc:"HT5",points:265,demo:true},
+{name:"NovaClutch",vanilla:"LT5",sword:"LT4",mace:"HT5",uhc:"—",points:195,demo:true},
+{name:"EchoStriker",vanilla:"HT5",sword:"LT5",mace:"—",uhc:"HT4",points:155,demo:true}
+];
+const modes=["Vanilla","Sword","Mace","UHC","Axe","Pot","NethOP","Crystal","DiaSMP","SMP","OG Vanilla","Bedrock"];
+let selectedMode="All";
+function tierRank(t){if(!t||t==="—")return 0;let n=parseInt(t.replace(/[A-Z]/g,""))||5;return (6-n)*10+(t.startsWith("HT")?5:0)}
+function overall(p){let vals=["vanilla","sword","mace","uhc"].map(k=>tierRank(p[k]));let best=Math.max(...vals);if(!best)return "Unranked";let level=6-Math.ceil(best/10);return (best%10>=5?"HT":"LT")+level}
+function badge(t){if(!t||t==="—")return '<span class="tier">—</span>';return '<span class="tier '+(t.startsWith("HT")?"ht":"lt")+'">'+t+'</span>'}
+function renderTable(){
+ const q=(document.getElementById("search").value||"").toLowerCase();
+ const list=players.filter(p=>(p.name.toLowerCase().includes(q))&&(selectedMode==="All"||modes.includes(selectedMode)));
+ const sorted=[...list].sort((a,b)=>b.points-a.points);
+ const body=document.getElementById("table-body");
+ document.getElementById("mode-heading").textContent=selectedMode==="All"?"Vanilla":selectedMode;
+ body.innerHTML=sorted.map((p,i)=>{
+  const show=k=>selectedMode==="All"||selectedMode===k;
+  const tierForMode=selectedMode==="All"?p.vanilla:(p[selectedMode.toLowerCase().replace(" ","")]||"—");
+  return `<tr><td class="rank">${String(i+1).padStart(2,"0")}</td><td><div class="player"><img class="head-icon" src="https://mc-heads.net/avatar/${encodeURIComponent(p.name)}/64" alt="${p.name} Minecraft skin" loading="lazy"><span>${p.name}${p.premium?'<span class="premium">PREMIUM</span>':""}${p.demo?'<span class="premium">DEMO</span>':""}</span></div></td><td class="overall">${overall(p)}</td><td>${badge(selectedMode==="All"?p.vanilla:tierForMode)}</td><td>${badge(p.sword)}</td><td>${badge(p.mace)}</td><td>${badge(p.uhc)}</td><td class="points">${p.points.toLocaleString()} pts</td></tr>`;
+ }).join("");
+ if(!sorted.length)body.innerHTML='<tr><td colspan="8" class="empty">No players found. Try another search.</td></tr>';
+}
+function setMode(mode,button){selectedMode=mode;document.querySelectorAll(".mode").forEach(b=>b.classList.toggle("active",b===button));renderTable()}
+function showPage(id){document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===id));document.getElementById("nav-home").classList.toggle("active",id==="home");document.getElementById("nav-tiers").classList.toggle("active",id==="tiers");window.scrollTo({top:0,behavior:"smooth"});if(id==="tiers")renderTable()}
+function copyIP(){const ip="play.mcpvp.com";if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(ip).then(()=>toast("Server IP copied!")).catch(()=>fallbackCopy(ip))}else fallbackCopy(ip)}
+function fallbackCopy(text){const el=document.createElement("textarea");el.value=text;document.body.appendChild(el);el.select();document.execCommand("copy");el.remove();toast("Server IP copied!")}
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1800)}
+document.getElementById("player-count").textContent=players.length;
+renderTable();
+
+// 3D Steve showcase: keeps the original tilted gold frame and page layout.
+window.addEventListener("load",()=>{
+  const canvas=document.getElementById("heroSkinCanvas");
+  if(!canvas || !window.skinview3d) return;
+  try {
+    const viewer=new skinview3d.SkinViewer({
+      canvas,
+      width:300,
+      height:300,
+      skin:"https://mc-heads.net/skin/DarkWarriorXO"
+    });
+    viewer.controls.enableRotate=true;
+    viewer.controls.enableZoom=false;
+    viewer.autoRotate=true;
+    viewer.animation=new skinview3d.IdleAnimation();
+    viewer.player.rotation.y=0.4;
+  } catch(error) {
+    console.error("Could not initialize the 3D Steve showcase:",error);
+  }
+});
+</script>
 out.write_text(html, encoding="utf-8")
 print(f"Created updated website: {out}\nSize: {out.stat().st_size:,} bytes\nBased on: {src.name}")
