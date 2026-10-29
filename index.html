@@ -1,301 +1,1153 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VoidTiers — Minecraft PvP Rankings</title>
-<meta name="theme-color" content="#090713">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg:#090713;
-  --panel:#110e20;
-  --purple:#9b68ff;
-  --cyan:#67e8f9;
-  --muted:#9690ad;
-  --line:rgba(175,140,255,.16);
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body {
-  background:var(--bg);color:#f8f5ff;font-family:Inter,sans-serif;
-  min-height:100vh;overflow-x:hidden;
-}
-body:before {
-  content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
-  background:
-    radial-gradient(ellipse at 50% -15%,#53219a55,transparent 55%),
-    radial-gradient(ellipse at 90% 65%,#35166d22,transparent 40%);
-}
-button,a{font:inherit}
-button{cursor:pointer}
-header {
-  height:78px;padding:0 6%;display:flex;align-items:center;
-  justify-content:space-between;border-bottom:1px solid var(--line);
-  background:#090713cc;backdrop-filter:blur(20px);
-  position:sticky;top:0;z-index:10;
-}
-.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:white}
-.logo {
-  width:43px;height:43px;border-radius:13px;display:grid;place-items:center;
-  background:linear-gradient(135deg,#bd91ff,#6824d9);
-  font-size:22px;font-weight:900;box-shadow:0 0 25px #974cff55;
-}
-.brand strong{font-family:Orbitron,sans-serif;font-size:19px;letter-spacing:1px}
-.brand small{display:block;color:var(--muted);font-size:9px;letter-spacing:3px;margin-top:4px}
-nav{display:flex;gap:28px}
-nav a{font-size:13px;color:#aaa3bd;text-decoration:none;transition:.25s}
-nav a:hover,nav a.active{color:white}
-nav a.active:after{content:"";display:block;height:2px;background:var(--purple);margin-top:8px;box-shadow:0 0 10px var(--purple)}
-.actions{display:flex;align-items:center;gap:12px}
-.ip {
-  border:1px solid var(--line);border-radius:9px;padding:10px 12px;
-  background:#ffffff05;color:#d5c6ff;font-size:11px;display:flex;gap:9px;align-items:center;
-}
-.online-dot{width:7px;height:7px;border-radius:50%;background:#53f6a7;box-shadow:0 0 9px #53f6a7}
-.btn {
-  border:1px solid #a77aff77;border-radius:9px;padding:11px 15px;
-  color:white;background:linear-gradient(135deg,#8c4ef0,#6425bd);
-  box-shadow:0 0 18px #853cff22;transition:.25s;font-size:12px;font-weight:700;
-}
-.btn:hover{transform:translateY(-2px);box-shadow:0 0 25px #985aff66}
-.discord{background:#5865f2;border-color:#8890ff}
-#profileButton{display:none;align-items:center;gap:8px;background:none;border:1px solid var(--line);color:white;border-radius:25px;padding:5px 12px 5px 5px}
-#profileButton img{width:31px;height:31px;border-radius:50%}
-main{max-width:1250px;margin:auto;padding:0 28px 70px}
-.hero {
-  min-height:355px;display:flex;align-items:center;justify-content:space-between;
-  position:relative;gap:25px;padding:58px 0 42px;
-}
-.hero-copy{max-width:690px;position:relative;z-index:1}
-.eyebrow{color:#c6a9ff;font-size:11px;letter-spacing:3px;font-weight:800}
-h1{font:800 clamp(34px,5vw,62px)/1.12 Orbitron,sans-serif;margin:18px 0}
-h1 span{background:linear-gradient(90deg,#fff,#b58aff 55%,#6be8ff);background-clip:text;color:transparent}
-.hero p{color:var(--muted);font-size:14px;line-height:1.8;max-width:540px}
-.hero-buttons{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
-.btn-outline{background:#ffffff06;border:1px solid var(--line)}
-.hero-art{width:270px;height:260px;flex-shrink:0;display:grid;place-items:center;position:relative}
-.orb{position:absolute;width:210px;height:210px;border-radius:50%;background:#7c36ff19;border:1px solid #a16dff35;box-shadow:0 0 90px #792fff22,inset 0 0 50px #833bff17;animation:float 5s ease-in-out infinite}
-.orb:before,.orb:after{content:"";position:absolute;inset:20px;border:1px solid #b18aff22;border-radius:50%;transform:rotateX(65deg) rotateZ(25deg)}
-.orb:after{transform:rotateX(65deg) rotateZ(-25deg)}
-.cube{font-size:110px;filter:drop-shadow(0 0 25px #a16aff55);animation:float 4s ease-in-out infinite}
-@keyframes float{50%{transform:translateY(-12px) rotateY(8deg)}}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:45px}
-.stat,.panel{background:linear-gradient(145deg,#151027d9,#0e0b19ed);border:1px solid var(--line);border-radius:14px}
-.stat{padding:20px 23px}
-.stat label{font-size:10px;color:var(--muted);letter-spacing:1.6px;text-transform:uppercase}
-.stat strong{display:block;font:700 25px Orbitron,sans-serif;margin-top:10px}
-.stat small{font-size:11px;color:#a987ff}
-.section-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:19px}
-h2{font:700 21px Orbitron,sans-serif}
-.section-head p{color:var(--muted);font-size:12px;margin-top:8px}
-.modes{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:20px}
-.mode {
-  color:#a9a0bd;background:#ffffff04;border:1px solid var(--line);
-  padding:11px 16px;border-radius:9px;font-size:12px;transition:.25s;
-}
-.mode:hover,.mode.active{color:white;border-color:#a16affaa;background:#8b4cff1b;box-shadow:0 0 18px #8c4cff14}
-.panel{overflow:hidden}
-.table-top{display:flex;justify-content:space-between;align-items:center;padding:20px 22px;border-bottom:1px solid var(--line)}
-.table-top span{color:var(--muted);font-size:12px}
-table{width:100%;border-collapse:collapse;text-align:left}
-th{color:#89819e;font-size:10px;text-transform:uppercase;letter-spacing:1px;font-weight:600}
-th,td{padding:16px 22px;border-bottom:1px solid #ffffff08}
-td{font-size:12px}
-tbody tr{transition:.2s}
-tbody tr:hover{background:#a16aff09}
-.player{display:flex;align-items:center;gap:12px}
-.avatar{width:38px;height:38px;border-radius:10px;background:#211735;object-fit:cover;border:1px solid #a16aff44}
-.player strong{display:block;font-size:12px}
-.player small{display:block;color:var(--muted);margin-top:4px;font-size:10px}
-.rank{font:700 15px Orbitron,sans-serif;color:#8c829f}
-.rank.gold{color:#ffce68}.rank.silver{color:#c5c7e0}.rank.bronze{color:#d89b70}
-.tier{display:inline-block;border:1px solid #a77aff66;background:#7e3fff18;color:#c8a7ff;border-radius:5px;padding:6px 9px;font-weight:800;font-size:10px}
-.points{font-weight:800}
-.region{font-size:17px}
-footer{padding:27px;text-align:center;color:#6f6882;font-size:11px;border-top:1px solid var(--line)}
-.mobile-menu{display:none}
-.toast{position:fixed;bottom:25px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#211636;border:1px solid #a16aff77;padding:13px 20px;border-radius:10px;font-size:12px;transition:.3s;z-index:99}
-.toast.show{opacity:1;transform:translate(-50%,0)}
-@media(max-width:850px){
-  nav{gap:14px}.ip{display:none}.hero-art{width:180px}.cube{font-size:80px}.orb{width:150px;height:150px}
-}
-@media(max-width:600px){
-  header{height:68px;padding:0 16px}.brand strong{font-size:15px}nav{display:none}
-  main{padding:0 15px 45px}.hero{padding:45px 0 30px;min-height:300px}
-  .hero-art{position:absolute;right:0;top:35px;opacity:.27;width:140px;pointer-events:none}
-  .hero-copy{width:100%}h1{font-size:37px}.hero p{font-size:13px}
-  .stats{gap:8px}.stat{padding:14px 10px}.stat strong{font-size:19px}.stat label{font-size:9px}
-  .section-head{align-items:start;flex-direction:column}
-  .table-scroll{overflow-x:auto}table{min-width:600px}th,td{padding:13px}
-  .actions{gap:6px}.discord{padding:10px;font-size:10px}
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PVP India | Minecraft Competitive Tier Testing Hub</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@500;600;700&family=Teko:wght@600;700&display=swap" rel="stylesheet">
+    <!-- Three.js for 3D Skin Rendering -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pvp: {
+                            red: '#ff0033',
+                            redGlow: '#ff2244',
+                            darkRed: '#88001b',
+                            cardBg: '#0a0a0a',
+                            borderRed: '#ff003344',
+                            saffron: '#FF9933',
+                            green: '#138808'
+                        }
+                    },
+                    fontFamily: {
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        rajdhani: ['Rajdhani', 'sans-serif'],
+                        teko: ['Teko', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base Reset & Core Theme */
+        * {
+            user-select: none;
+            -webkit-user-select: none;
+            box-sizing: border-box;
+        }
+        
+        body, html {
+            background-color: #000000 !important;
+            color: #ffffff;
+            font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #000000;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ff0033;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff2244;
+            box-shadow: 0 0 10px #ff0033;
+        }
+
+        /* Ambient Ember Particle Canvas Background */
+        #bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Dynamic Title Styling */
+        .pvp-text-glitch {
+            font-family: 'Orbitron', sans-serif;
+            color: #ff0033;
+            text-shadow: 0 0 10px #ff0033, 0 0 20px #ff0033, 0 0 30px #88001b;
+            animation: redGlowPulse 2s infinite alternate;
+        }
+
+        @keyframes redGlowPulse {
+            0% { text-shadow: 0 0 8px #ff0033, 0 0 15px #ff0033; }
+            100% { text-shadow: 0 0 18px #ff2244, 0 0 35px #ff0033, 0 0 50px #ff0033; }
+        }
+
+        .patriotic-india {
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(130deg, #FF9933 10%, #FFFFFF 50%, #138808 90%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            display: inline-block;
+            filter: drop-shadow(0 0 8px rgba(255,255,255,0.3));
+        }
+
+        /* Chakra Motif Watermark Icon */
+        .chakra-motif {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.15;
+            width: 1.8em;
+            height: 1.8em;
+            border: 2px dashed #000080;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: spinChakra 20s linear infinite;
+        }
+        @keyframes spinChakra { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        /* Interactive Navigation Tabs */
+        .nav-tab {
+            position: relative;
+            background: #0d0d0d;
+            border: 1px solid #ff003333;
+            border-top: 3px solid #ff0033;
+            transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transform-origin: top center;
+            top: 0;
+        }
+        .nav-tab:hover {
+            top: 8px; /* Shifts down while connected to top border */
+            background: #180306;
+            border-color: #ff0033;
+            box-shadow: 0 8px 25px rgba(255, 0, 51, 0.4);
+            color: #ffffff;
+        }
+        .nav-tab.active {
+            top: 10px;
+            background: #220008;
+            border-color: #ff0033;
+            border-top-width: 4px;
+            box-shadow: 0 10px 30px rgba(255, 0, 51, 0.6);
+            color: #ffffff;
+        }
+
+        /* Glassmorphic Cyber Gaming Cards */
+        .cyber-card {
+            background: rgba(10, 10, 10, 0.85);
+            border: 1px solid rgba(255, 0, 51, 0.25);
+            backdrop-filter: blur(12px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .cyber-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, #ff0033, transparent);
+            transition: 0.5s;
+        }
+        .cyber-card:hover::before {
+            left: 100%;
+        }
+        .cyber-card:hover {
+            border-color: rgba(255, 0, 51, 0.8);
+            box-shadow: 0 0 25px rgba(255, 0, 51, 0.25);
+            transform: translateY(-2px);
+        }
+
+        /* Custom Physics Physics Draggable Elements */
+        .draggable-badge {
+            cursor: grab;
+            transition: transform 0.05s ease-out;
+            touch-action: none;
+        }
+        .draggable-badge:active {
+            cursor: grabbing;
+        }
+
+        /* Pulsing Status Light */
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #ff0033;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #ff0033, 0 0 15px #ff0033;
+            animation: blink 1.2s infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(0.85); }
+        }
+
+        /* 360 Spin Game Mode Carousel */
+        .carousel-container {
+            perspective: 1200px;
+            width: 100%;
+            height: 280px;
+            position: relative;
+        }
+        .carousel-spinner {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out;
+        }
+        .carousel-item {
+            position: absolute;
+            width: 200px;
+            height: 220px;
+            left: 50%;
+            top: 10%;
+            margin-left: -100px;
+            transform-style: preserve-3d;
+        }
+
+        /* Custom Tier Badges */
+        .tier-badge {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .tier-HT1 { background: linear-gradient(135deg, #ff0033, #88001b); color: #fff; border: 1px solid #ff4466; box-shadow: 0 0 10px #ff003388; }
+        .tier-LT1 { background: linear-gradient(135deg, #cc002b, #44000d); color: #ffcccc; border: 1px solid #ff003344; }
+        .tier-HT2 { background: linear-gradient(135deg, #e65c00, #803300); color: #fff; border: 1px solid #ff8533; }
+        .tier-LT2 { background: #1a1a1a; color: #ff9966; border: 1px solid #e65c0066; }
+        .tier-HT3 { background: #262626; color: #cccccc; border: 1px solid #666; }
+
+        /* Intro Screen Mask */
+        #introOverlay {
+            position: fixed;
+            inset: 0;
+            background-color: #000000;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 1s cubic-bezier(0.77, 0, 0.175, 1), visibility 1s;
+        }
+        
+        .intro-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 6rem;
+            font-weight: 900;
+            letter-spacing: 15px;
+            background: linear-gradient(90deg, #FF9933, #FFFFFF, #138808);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: introZoomGlow 2.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            filter: drop-shadow(0 0 35px rgba(255, 0, 51, 0.8));
+        }
+
+        @keyframes introZoomGlow {
+            0% { transform: scale(0.6); opacity: 0; filter: blur(20px) drop-shadow(0 0 0px #ff0033); }
+            50% { opacity: 1; filter: blur(0px) drop-shadow(0 0 40px #ff0033); }
+            100% { transform: scale(1.1); opacity: 0.95; filter: drop-shadow(0 0 60px #ff0033); }
+        }
+
+        /* Modal Overlay Animations */
+        .modal-backdrop {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+        }
+    </style>
 </head>
-<body>
-<header>
-  <a class="brand" href="#" aria-label="VoidTiers home">
-    <div class="logo">V</div>
-    <div><strong>VOIDTIERS</strong><small>PVP NETWORK</small></div>
-  </a>
-  <nav>
-    <a class="active" href="#home">Home</a>
-    <a href="#modes">Gamemodes</a>
-    <a href="#leaderboard">Leaderboard</a>
-    <a href="#about">About</a>
-  </nav>
-  <div class="actions">
-    <button class="ip" id="copyIP"><span class="online-dot"></span><span>play.example.net</span> <b>⧉</b></button>
-    <button class="btn discord" id="loginButton">◉ Login with Discord</button>
-    <button id="profileButton">
-      <img id="profileAvatar" alt="Discord avatar">
-      <span id="profileName">Player</span>
-    </button>
-  </div>
-</header>
+<body class="relative min-h-screen text-gray-100 selection:bg-pvp-red selection:text-white">
 
-<main id="home">
-  <section class="hero">
-    <div class="hero-copy">
-      <div class="eyebrow">✦ THE NEXT LEVEL OF COMPETITION</div>
-      <h1>PROVE YOUR<br><span>TRUE TIER.</span></h1>
-      <p>Compete against the best Minecraft PvP players. Track your stats, climb the leaderboard, and establish your legacy across every gamemode.</p>
-      <div class="hero-buttons">
-        <button class="btn" onclick="document.querySelector('#leaderboard').scrollIntoView({behavior:'smooth'})">Explore Rankings ↗</button>
-        <button class="btn btn-outline" onclick="document.querySelector('#modes').scrollIntoView({behavior:'smooth'})">Browse Gamemodes</button>
-      </div>
+    <!-- Canvas Background Ambient Embers -->
+    <canvas id="bgCanvas"></canvas>
+
+    <!-- Initial Intro Screen Overlay -->
+    <div id="introOverlay">
+        <div class="text-center relative">
+            <h1 class="intro-title select-none">INDIA</h1>
+            <p class="font-orbitron text-pvp-red tracking-widest text-sm mt-4 uppercase animate-pulse">
+                [ Competitive PvP Tier Testing System ]
+            </p>
+        </div>
     </div>
-    <div class="hero-art" aria-hidden="true">
-      <div class="orb"></div><div class="cube">⚔</div>
+
+    <!-- MAIN APP CONTAINER -->
+    <div id="appContainer" class="relative z-10 min-h-screen flex flex-col justify-between">
+        
+        <!-- HEADER / NAVIGATION SECTION -->
+        <header class="sticky top-0 z-40 bg-black/90 border-b border-pvp-red/30 backdrop-blur-md px-4 lg:px-12 py-3 flex flex-wrap items-center justify-between gap-4">
+            
+            <!-- Logo Section -->
+            <div class="flex items-center gap-3 cursor-pointer group" onclick="switchTab('tier-test')">
+                <div class="w-10 h-10 rounded bg-black border border-pvp-red flex items-center justify-center shadow-[0_0_15px_#ff003366] group-hover:scale-105 transition-transform">
+                    <i class="fa-solid fa-shield-halved text-pvp-red text-xl"></i>
+                </div>
+                <div class="flex flex-col">
+                    <div class="text-2xl font-black tracking-wider flex items-center gap-1">
+                        <span class="pvp-text-glitch">PVP</span>
+                        <span class="patriotic-india ml-1">INDIA
+                            <span class="chakra-motif"></span>
+                        </span>
+                    </div>
+                    <span class="text-[9px] font-orbitron tracking-widest text-gray-400 -mt-1 uppercase">Official Tier Directory</span>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs (Dynamic Shift-Down Anchored to Top Border) -->
+            <nav class="flex items-center gap-2 sm:gap-4 overflow-x-auto py-1">
+                <button onclick="switchTab('tier-test')" id="tab-tier-test" class="nav-tab active px-5 py-2 rounded-b-lg font-orbitron text-xs sm:text-sm font-semibold tracking-wider uppercase flex items-center gap-2">
+                    <i class="fa-solid fa-trophy text-pvp-red"></i> Tier Test
+                </button>
+                <button onclick="switchTab('event')" id="tab-event" class="nav-tab px-5 py-2 rounded-b-lg font-orbitron text-xs sm:text-sm font-semibold tracking-wider uppercase flex items-center gap-2 text-gray-400">
+                    <i class="fa-solid fa-calendar-check text-pvp-red"></i> Events
+                </button>
+                <button onclick="switchTab('mod')" id="tab-mod" class="nav-tab px-5 py-2 rounded-b-lg font-orbitron text-xs sm:text-sm font-semibold tracking-wider uppercase flex items-center gap-2 text-gray-400">
+                    <i class="fa-solid fa-cubes text-pvp-red"></i> Mods
+                </button>
+                <button onclick="switchTab('server')" id="tab-server" class="nav-tab px-5 py-2 rounded-b-lg font-orbitron text-xs sm:text-sm font-semibold tracking-wider uppercase flex items-center gap-2 text-gray-400">
+                    <i class="fa-solid fa-server text-pvp-red"></i> Server IP
+                </button>
+            </nav>
+
+            <!-- Quick Action / Admin Panel Trigger Button -->
+            <div class="flex items-center gap-3">
+                <button onclick="openAdminModal()" class="px-3 py-1.5 rounded bg-pvp-red/10 border border-pvp-red/50 hover:bg-pvp-red hover:text-black font-orbitron text-xs tracking-wider transition-all shadow-[0_0_10px_#ff003333] flex items-center gap-2">
+                    <i class="fa-solid fa-user-gear"></i> OP Panel
+                </button>
+            </div>
+        </header>
+
+        <!-- DYNAMIC PAGE BODY CONTENT -->
+        <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+
+            <!-- SECTION 1: LIVE STATS WIDGETS & PHYSICS BADGES -->
+            <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Discord Counter Widget -->
+                <div class="cyber-card rounded-xl p-5 flex items-center justify-between border-l-4 border-l-pvp-red">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2 text-xs font-orbitron text-gray-400 uppercase tracking-widest">
+                            <span class="status-dot"></span> Discord Members
+                        </div>
+                        <div class="text-3xl font-orbitron font-bold text-white tracking-tight" id="statDiscord">12,480</div>
+                        <p class="text-xs text-gray-500 font-rajdhani">Active in #tier-testing</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-lg bg-pvp-red/10 border border-pvp-red/30 flex items-center justify-center text-pvp-red text-2xl">
+                        <i class="fa-brands fa-discord"></i>
+                    </div>
+                </div>
+
+                <!-- Online Web Players Widget -->
+                <div class="cyber-card rounded-xl p-5 flex items-center justify-between border-l-4 border-l-pvp-red">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2 text-xs font-orbitron text-gray-400 uppercase tracking-widest">
+                            <span class="status-dot"></span> Live Queue Players
+                        </div>
+                        <div class="text-3xl font-orbitron font-bold text-white tracking-tight" id="statOnline">1,240</div>
+                        <p class="text-xs text-gray-500 font-rajdhani">Currently in matches</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-lg bg-pvp-red/10 border border-pvp-red/30 flex items-center justify-center text-pvp-red text-2xl">
+                        <i class="fa-solid fa-users-rays"></i>
+                    </div>
+                </div>
+
+                <!-- Peak Stats Widget -->
+                <div class="cyber-card rounded-xl p-5 flex items-center justify-between border-l-4 border-l-pvp-red">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2 text-xs font-orbitron text-gray-400 uppercase tracking-widest">
+                            <span class="status-dot"></span> Peak Daily Stats
+                        </div>
+                        <div class="text-3xl font-orbitron font-bold text-white tracking-tight" id="statPeak">4,892</div>
+                        <p class="text-xs text-gray-500 font-rajdhani">24h Record Peak</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-lg bg-pvp-red/10 border border-pvp-red/30 flex items-center justify-center text-pvp-red text-2xl">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                </div>
+            </section>
+
+            <!-- INTERACTIVE DRAG & FLICK PHYSICS SECTION -->
+            <section class="cyber-card rounded-xl p-4 flex flex-wrap items-center justify-between gap-4 border border-pvp-red/20 bg-black/60">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-hand-pointer text-pvp-red animate-bounce"></i>
+                    <span class="font-orbitron text-xs text-gray-300 uppercase tracking-wider">Physics Playground: Click & Drag Badges to Flick Them!</span>
+                </div>
+                <div class="flex flex-wrap items-center gap-4">
+                    <div class="draggable-badge px-4 py-1.5 rounded-full bg-pvp-red/20 border border-pvp-red text-pvp-red font-orbitron text-xs font-bold tracking-widest shadow-[0_0_10px_#ff003344]">
+                        #1 IN REGION
+                    </div>
+                    <div class="draggable-badge px-4 py-1.5 rounded-full bg-white/10 border border-white/30 text-white font-orbitron text-xs font-bold tracking-widest">
+                        SEASON 4 LIVE
+                    </div>
+                    <div class="draggable-badge px-4 py-1.5 rounded-full bg-pvp-red/20 border border-pvp-red text-pvp-red font-orbitron text-xs font-bold tracking-widest shadow-[0_0_10px_#ff003344]">
+                        HT1 VERIFIED
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB CONTENT 1: TIER TEST (MAIN VIEW) -->
+            <div id="view-tier-test" class="tab-content space-y-12">
+
+                <!-- SECTION 2: 3D SKIN STUDIO & GAME MODES CAROUSEL GRID -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    
+                    <!-- 3D Minecraft Skin Customization Box (4 Cols) -->
+                    <div class="lg:col-span-4 cyber-card rounded-xl p-6 flex flex-col items-center justify-between border border-pvp-red/40 bg-black/80">
+                        <div class="w-full flex items-center justify-between border-b border-pvp-red/30 pb-3 mb-4">
+                            <h3 class="font-orbitron font-bold text-lg text-white flex items-center gap-2">
+                                <i class="fa-solid fa-user-ninja text-pvp-red"></i> 3D Skin Preview
+                            </h3>
+                            <span class="text-[10px] font-orbitron px-2 py-0.5 rounded bg-pvp-red/20 text-pvp-red border border-pvp-red/40">Interactive</span>
+                        </div>
+
+                        <!-- 3D WebGL Canvas Container -->
+                        <div class="relative w-full h-64 bg-gradient-to-b from-black via-pvp-darkRed/20 to-black rounded-lg border border-pvp-red/20 flex items-center justify-center overflow-hidden group cursor-grab active:cursor-grabbing">
+                            <canvas id="skinCanvas" class="w-full h-full"></canvas>
+                            <div class="absolute bottom-2 left-2 text-[10px] font-orbitron text-gray-500 pointer-events-none">
+                                <i class="fa-solid fa-rotate"></i> Drag to spin avatar
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons: Download & Upload Skin -->
+                        <div class="w-full grid grid-cols-2 gap-3 mt-6">
+                            <button onclick="downloadSkinTexture()" class="px-4 py-2 rounded.bg-black border border-pvp-red/60 hover:bg-pvp-red/20 text-white font-orbitron text-xs font-semibold tracking-wider transition-all flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-download text-pvp-red"></i> Download
+                            </button>
+                            <label class="px-4 py-2 rounded bg-pvp-red border border-pvp-red hover:bg-pvp-redGlow text-white font-orbitron text-xs font-bold tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2 shadow-[0_0_15px_#ff003366]">
+                                <i class="fa-solid fa-upload"></i> Upload PNG
+                                <input type="file" id="skinUploadInput" accept="image/png" class="hidden" onchange="handleSkinUpload(event)">
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Interactive 360-Degree Game Modes Carousel (8 Cols) -->
+                    <div class="lg:col-span-8 cyber-card rounded-xl p-6 border border-pvp-red/40 bg-black/80 flex flex-col justify-between">
+                        <div class="flex flex-wrap items-center justify-between border-b border-pvp-red/30 pb-3 mb-2 gap-2">
+                            <div>
+                                <h3 class="font-orbitron font-bold text-lg text-white flex items-center gap-2">
+                                    <i class="fa-solid fa-gamepad text-pvp-red"></i> PvP Game Modes
+                                </h3>
+                                <p class="text-xs text-gray-400 font-rajdhani">Drag horizontally or click arrows to spin modes with sound cues</p>
+                            </div>
+                            <!-- Carousel Control Arrows -->
+                            <div class="flex items-center gap-2">
+                                <button onclick="rotateCarousel(-1)" class="w-8 h-8 rounded bg-black border border-pvp-red/50 hover:bg-pvp-red text-white flex items-center justify-center transition-all">
+                                    <i class="fa-solid fa-chevron-left"></i>
+                                </button>
+                                <button onclick="rotateCarousel(1)" class="w-8 h-8 rounded bg-black border border-pvp-red/50 hover:bg-pvp-red text-white flex items-center justify-center transition-all">
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 3D Carousel Stage -->
+                        <div class="carousel-container my-4" id="carouselContainer">
+                            <div class="carousel-spinner" id="carouselSpinner">
+                                <!-- Dynamic Mode Cards Injected by JS -->
+                            </div>
+                        </div>
+
+                        <div class="text-center font-orbitron text-xs text-gray-500 uppercase tracking-widest pt-2 border-t border-pvp-red/20">
+                            Active Mode Filter: <span id="activeModeLabel" class="text-pvp-red font-bold">ALL MODES</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 3: GLOBAL TIER LEADERBOARD -->
+                <div class="space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-pvp-red/30 pb-4">
+                        <div>
+                            <h2 class="font-orbitron text-2xl font-black tracking-wider text-white flex items-center gap-3">
+                                <i class="fa-solid fa-ranking-star text-pvp-red"></i> GLOBAL TIER LEADERBOARD
+                            </h2>
+                            <p class="text-xs text-gray-400 font-rajdhani">Verified competitive players ranked by performance & tier tests</p>
+                        </div>
+                        
+                        <!-- Search & Filter Controls -->
+                        <div class="flex items-center gap-3 w-full sm:w-auto">
+                            <div class="relative w-full sm:w-64">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+                                <input type="text" id="leaderboardSearch" oninput="renderLeaderboard()" placeholder="Search player username..." class="w-full bg-black border border-pvp-red/40 rounded pl-9 pr-4 py-1.5 text-xs font-orbitron text-white focus:outline-none focus:border-pvp-red">
+                            </div>
+                            <select id="tierFilter" onchange="renderLeaderboard()" class="bg-black border border-pvp-red/40 rounded px-3 py-1.5 text-xs font-orbitron text-white focus:outline-none focus:border-pvp-red">
+                                <option value="ALL">All Tiers</option>
+                                <option value="HT1">Tier HT1</option>
+                                <option value="LT1">Tier LT1</option>
+                                <option value="HT2">Tier HT2</option>
+                                <option value="LT2">Tier LT2</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Player Cards Grid -->
+                    <div id="leaderboardGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Rendered by JavaScript -->
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- TAB CONTENT 2: EVENTS -->
+            <div id="view-event" class="tab-content hidden space-y-6">
+                <h2 class="font-orbitron text-2xl font-black text-white flex items-center gap-3 border-b border-pvp-red/30 pb-4">
+                    <i class="fa-solid fa-trophy text-pvp-red"></i> UPCOMING PVP TOURNAMENTS
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="cyber-card rounded-xl p-6 border-l-4 border-l-pvp-red space-y-4">
+                        <div class="flex justify-between items-start">
+                            <span class="px-3 py-1 rounded bg-pvp-red/20 text-pvp-red border border-pvp-red text-xs font-orbitron font-bold">1v1 NethOP Cup</span>
+                            <span class="text-xs font-orbitron text-gray-400"><i class="fa-solid fa-clock"></i> Starts in 2 days</span>
+                        </div>
+                        <h3 class="font-orbitron text-xl font-bold text-white">India Championship S4</h3>
+                        <p class="text-sm text-gray-300">Single elimination bracket with HT1 verified referees. ₹25,000 INR Prize Pool + Special Discord Roles.</p>
+                        <button class="w-full py-2 bg-pvp-red hover:bg-pvp-redGlow font-orbitron text-xs font-bold text-white rounded transition-all shadow-[0_0_15px_#ff003366]">REGISTER FOR TOURNAMENT</button>
+                    </div>
+                    <div class="cyber-card rounded-xl p-6 border-l-4 border-l-pvp-red space-y-4">
+                        <div class="flex justify-between items-start">
+                            <span class="px-3 py-1 rounded bg-pvp-red/20 text-pvp-red border border-pvp-red text-xs font-orbitron font-bold">Crystal PvP Draft</span>
+                            <span class="text-xs font-orbitron text-gray-400"><i class="fa-solid fa-clock"></i> Next Weekend</span>
+                        </div>
+                        <h3 class="font-orbitron text-xl font-bold text-white">2v2 Crystal Blitz</h3>
+                        <p class="text-sm text-gray-300">Fast-paced 2v2 crystal grid match. Custom anti-cheat server provided for all rounds.</p>
+                        <button class="w-full py-2 bg-pvp-red hover:bg-pvp-redGlow font-orbitron text-xs font-bold text-white rounded transition-all shadow-[0_0_15px_#ff003366]">JOIN WAITING LIST</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB CONTENT 3: MODS -->
+            <div id="view-mod" class="tab-content hidden space-y-6">
+                <h2 class="font-orbitron text-2xl font-black text-white flex items-center gap-3 border-b border-pvp-red/30 pb-4">
+                    <i class="fa-solid fa-cubes text-pvp-red"></i> ALLOWED COMPETITIVE MODPACKS
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="cyber-card rounded-xl p-6 space-y-3">
+                        <div class="text-pvp-red text-3xl"><i class="fa-solid fa-bolt"></i></div>
+                        <h3 class="font-orbitron text-lg font-bold text-white">PVP India Client v3.2</h3>
+                        <p class="text-xs text-gray-400">Official Lunar/Fabric modpack containing optimized HUD, keystrokes, and hit-color adjustments.</p>
+                        <button onclick="copyToClipboard('https://pvpindia.net/mods/modpack.zip', 'Modpack link copied!')" class="w-full py-2 bg-black border border-pvp-red/50 hover:bg-pvp-red text-white font-orbitron text-xs rounded transition-all">DOWNLOAD PACK</button>
+                    </div>
+                    <div class="cyber-card rounded-xl p-6 space-y-3">
+                        <div class="text-pvp-red text-3xl"><i class="fa-solid fa-shield-cat"></i></div>
+                        <h3 class="font-orbitron text-lg font-bold text-white">Anti-Cheat Core Mod</h3>
+                        <p class="text-xs text-gray-400">Mandatory client-side integrity checker required for HT1/LT1 official tier tests.</p>
+                        <button onclick="copyToClipboard('https://pvpindia.net/mods/anticheat.jar', 'Anti-cheat link copied!')" class="w-full py-2 bg-black border border-pvp-red/50 hover:bg-pvp-red text-white font-orbitron text-xs rounded transition-all">DOWNLOAD JAR</button>
+                    </div>
+                    <div class="cyber-card rounded-xl p-6 space-y-3">
+                        <div class="text-pvp-red text-3xl"><i class="fa-solid fa-crosshair"></i></div>
+                        <h3 class="font-orbitron text-lg font-bold text-white">Custom Dynamic Crosshair</h3>
+                        <p class="text-xs text-gray-400">Custom SVG red crosshair overlay used by top India tier players for optimal aim tracking.</p>
+                        <button onclick="copyToClipboard('https://pvpindia.net/mods/crosshair.zip', 'Crosshair pack copied!')" class="w-full py-2 bg-black border border-pvp-red/50 hover:bg-pvp-red text-white font-orbitron text-xs rounded transition-all">DOWNLOAD MOD</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB CONTENT 4: SERVER IP -->
+            <div id="view-server" class="tab-content hidden space-y-6">
+                <div class="cyber-card rounded-xl p-8 max-w-2xl mx-auto text-center space-y-6 border border-pvp-red">
+                    <div class="w-16 h-16 rounded-full bg-pvp-red/20 border border-pvp-red flex items-center justify-center mx-auto text-pvp-red text-3xl shadow-[0_0_20px_#ff003388]">
+                        <i class="fa-solid fa-network-wired"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-orbitron text-3xl font-black text-white">CONNECT TO SERVER</h2>
+                        <p class="text-sm text-gray-400 font-rajdhani mt-1">Official Low-Latency India Minecraft PvP Testing Network</p>
+                    </div>
+                    <div class="p-4 bg-black rounded-lg border border-pvp-red/40 flex items-center justify-between gap-4">
+                        <code id="serverIpText" class="font-orbitron text-lg text-pvp-red font-bold tracking-widest">play.pvpindia.net</code>
+                        <button onclick="copyToClipboard('play.pvpindia.net', 'Server IP Copied to Clipboard!')" class="px-4 py-2 bg-pvp-red hover:bg-pvp-redGlow text-white font-orbitron text-xs font-bold rounded transition-all shadow-[0_0_10px_#ff003366]">
+                            <i class="fa-solid fa-copy"></i> COPY IP
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 text-left font-orbitron text-xs text-gray-400 pt-4 border-t border-pvp-red/20">
+                        <div><i class="fa-solid fa-check text-pvp-red"></i> Version: 1.18.2 - 1.20.x</div>
+                        <div><i class="fa-solid fa-check text-pvp-red"></i> Location: Mumbai, India</div>
+                        <div><i class="fa-solid fa-check text-pvp-red"></i> Tickrate: 20.0 TPS Fixed</div>
+                        <div><i class="fa-solid fa-check text-pvp-red"></i> Anti-Cheat: GrimAC Custom</div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- FOOTER SECTION -->
+        <footer class="bg-black border-t border-pvp-red/30 py-6 px-4 text-center space-y-2">
+            <div class="flex items-center justify-center gap-2 font-orbitron text-sm">
+                <span class="pvp-text-glitch">PVP</span>
+                <span class="patriotic-india">INDIA</span>
+            </div>
+            <p class="text-xs text-gray-500 font-rajdhani">Not affiliated with Mojang AB or Microsoft. Designed for Competitive Minecraft Players.</p>
+        </footer>
     </div>
-  </section>
 
-  <section class="stats">
-    <div class="stat"><label>Ranked Players</label><strong>1,284</strong><small>↗ Competitive community</small></div>
-    <div class="stat"><label>Gamemodes</label><strong>08</strong><small>✦ Multiple PvP styles</small></div>
-    <div class="stat"><label>Network Status</label><strong style="color:#64f0ac">ONLINE</strong><small>● Website operational</small></div>
-  </section>
+    <!-- PLAYER PROFILE MODAL -->
+    <div id="playerModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4">
+        <div class="cyber-card rounded-xl max-w-lg w-full bg-black border-2 border-pvp-red p-6 space-y-6 relative animate-in fade-in zoom-in duration-200">
+            <button onclick="closePlayerModal()" class="absolute top-4 right-4 text-gray-400 hover:text-pvp-red text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="flex items-center gap-4">
+                <div class="w-16 h-16 rounded bg-pvp-red/20 border border-pvp-red flex items-center justify-center overflow-hidden">
+                    <img id="modalAvatar" src="" alt="Skin" class="w-12 h-12 object-contain">
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h3 id="modalUsername" class="font-orbitron text-2xl font-black text-white">--</h3>
+                        <span id="modalRegion" class="text-xs px-2 py-0.5 rounded bg-gray-800 text-gray-300 font-orbitron">--</span>
+                    </div>
+                    <p id="modalTier" class="text-xs font-orbitron text-pvp-red font-bold">--</p>
+                </div>
+            </div>
 
-  <section id="modes">
-    <div class="section-head">
-      <div><h2>Choose Your Gamemode</h2><p>Choose a category to explore its player rankings.</p></div>
+            <!-- Modal Stats Grid -->
+            <div class="grid grid-cols-2 gap-3 text-center">
+                <div class="p-3 bg-pvp-red/10 border border-pvp-red/30 rounded">
+                    <div class="text-xs font-orbitron text-gray-400">Total Points</div>
+                    <div id="modalPoints" class="text-xl font-orbitron font-bold text-white">0</div>
+                </div>
+                <div class="p-3 bg-pvp-red/10 border border-pvp-red/30 rounded">
+                    <div class="text-xs font-orbitron text-gray-400">Favorite Mode</div>
+                    <div id="modalFavMode" class="text-xl font-orbitron font-bold text-pvp-red">--</div>
+                </div>
+            </div>
+
+            <!-- Recent Match History -->
+            <div class="space-y-2">
+                <h4 class="font-orbitron text-xs text-gray-400 uppercase tracking-widest">Recent Tier Test Matches</h4>
+                <div class="space-y-1.5 text-xs font-orbitron">
+                    <div class="p-2 bg-gray-900 rounded flex justify-between items-center border-l-2 border-green-500">
+                        <span>VS Blitz_PvP (NethOP 1v1)</span>
+                        <span class="text-green-400 font-bold">VICTORY (3-1)</span>
+                    </div>
+                    <div class="p-2 bg-gray-900 rounded flex justify-between items-center border-l-2 border-pvp-red">
+                        <span>VS Alpha_God (Pot PvP)</span>
+                        <span class="text-pvp-red font-bold">DEFEAT (2-3)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="modes" id="modeButtons"></div>
-  </section>
 
-  <section id="leaderboard" style="margin-top:32px">
-    <div class="section-head">
-      <div><h2>Global Leaderboard</h2><p id="leaderSubtitle">Top players in Sword PvP</p></div>
-      <span class="eyebrow">SEASON 01 / 2026</span>
+    <!-- ADMIN / OPERATOR DASHBOARD MODAL -->
+    <div id="adminModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4">
+        <div class="cyber-card rounded-xl max-w-md w-full bg-black border-2 border-pvp-red p-6 space-y-6 relative">
+            <button onclick="closeAdminModal()" class="absolute top-4 right-4 text-gray-400 hover:text-pvp-red text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div class="border-b border-pvp-red/30 pb-3">
+                <h3 class="font-orbitron text-xl font-black text-white flex items-center gap-2">
+                    <i class="fa-solid fa-user-shield text-pvp-red"></i> OP ADMIN CONTROLLER
+                </h3>
+                <p class="text-xs text-gray-400 font-rajdhani">Add or update real-time player tiers in the live database</p>
+            </div>
+
+            <form id="adminForm" onsubmit="handleAdminAddPlayer(event)" class="space-y-4 font-orbitron text-xs">
+                <div>
+                    <label class="block text-gray-400 mb-1">Minecraft Username</label>
+                    <input type="text" id="adminUsername" required placeholder="e.g. GamerTag99" class="w-full bg-gray-900 border border-pvp-red/40 rounded px-3 py-2 text-white focus:outline-none focus:border-pvp-red">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-gray-400 mb-1">Assigned Tier</label>
+                        <select id="adminTier" class="w-full bg-gray-900 border border-pvp-red/40 rounded px-3 py-2 text-white focus:outline-none focus:border-pvp-red">
+                            <option value="HT1">HT1 (High Tier 1)</option>
+                            <option value="LT1">LT1 (Low Tier 1)</option>
+                            <option value="HT2">HT2 (High Tier 2)</option>
+                            <option value="LT2">LT2 (Low Tier 2)</option>
+                            <option value="HT3">HT3 (High Tier 3)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 mb-1">Region Tag</label>
+                        <select id="adminRegion" class="w-full bg-gray-900 border border-pvp-red/40 rounded px-3 py-2 text-white focus:outline-none focus:border-pvp-red">
+                            <option value="IN">IN (India)</option>
+                            <option value="US">US (North America)</option>
+                            <option value="GB">GB (Europe)</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">Competitive Points</label>
+                    <input type="number" id="adminPoints" required value="1200" class="w-full bg-gray-900 border border-pvp-red/40 rounded px-3 py-2 text-white focus:outline-none focus:border-pvp-red">
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">Primary Game Mode</label>
+                    <select id="adminMode" class="w-full bg-gray-900 border border-pvp-red/40 rounded px-3 py-2 text-white focus:outline-none focus:border-pvp-red">
+                        <option value="NethOP">NethOP</option>
+                        <option value="Pot">Pot PvP</option>
+                        <option value="UHC">UHC</option>
+                        <option value="Crystal">Crystal</option>
+                        <option value="Sword">Sword</option>
+                        <option value="Axe">Axe</option>
+                        <option value="Mace">Mace</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="w-full py-3 bg-pvp-red hover:bg-pvp-redGlow text-white font-bold rounded transition-all shadow-[0_0_15px_#ff003366] uppercase tracking-wider">
+                    <i class="fa-solid fa-plus"></i> Push Player To Leaderboard
+                </button>
+            </form>
+        </div>
     </div>
-    <div class="panel">
-      <div class="table-top"><strong id="tableTitle">⚔ Sword Rankings</strong><span>Demo leaderboard</span></div>
-      <div class="table-scroll">
-        <table>
-          <thead><tr><th>Rank</th><th>Player</th><th>Region</th><th>Tier</th><th>Points</th></tr></thead>
-          <tbody id="playersTable"></tbody>
-        </table>
-      </div>
+
+    <!-- NOTIFICATION TOAST FEEDBACK -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 hidden bg-black border-2 border-pvp-red text-white font-orbitron text-xs px-5 py-3 rounded-lg shadow-[0_0_20px_#ff003388] transition-all flex items-center gap-3">
+        <i class="fa-solid fa-circle-check text-pvp-red text-base"></i>
+        <span id="toastMessage">Action completed successfully!</span>
     </div>
-  </section>
 
-  <section id="about" style="padding:60px 0 15px;text-align:center">
-    <div class="eyebrow">BUILT FOR COMPETITORS</div>
-    <h2 style="margin:15px 0">Your skill. Your legacy.</h2>
-    <p style="color:var(--muted);font-size:13px;line-height:1.8">A Minecraft PvP ranking interface concept.<br>Connect real authentication and ranking data to launch your network.</p>
-  </section>
-</main>
 
-<footer>© 2026 VoidTiers · Unofficial community ranking concept · Not affiliated with Mojang or Microsoft.</footer>
-<div class="toast" id="toast"></div>
+    <!-- JAVASCRIPT APPLICATION CODE BASE -->
+    <script>
+        /* ==========================================
+           1. INITIAL STATE & DATA STORAGE
+           ========================================== */
+        const gameModes = [
+            { id: 'UHC', name: 'UHC PvP', icon: 'fa-apple-whole', desc: 'Golden Apples & Lava Play' },
+            { id: 'Pot', name: 'Node / Pot', icon: 'fa-flask', desc: 'Speed II & Health Potions' },
+            { id: 'NethOP', name: 'Netherite OP', icon: 'fa-shield', desc: 'Prot IV Netherite & Anchors' },
+            { id: 'SMP', name: 'Vanilla SMP', icon: 'fa-tree', desc: 'Standard Shield & Sword' },
+            { id: 'Sword', name: '1.8 Sword', icon: 'fa-khanda', desc: 'Classic Block Hitting' },
+            { id: 'Axe', name: 'Axe & Shield', icon: 'fa-axe', desc: 'Shield Disabling & Crits' },
+            { id: 'Mace', name: 'Heavy Mace', icon: 'fa-hammer', desc: '1.21 Heavy Slam Attacks' },
+            { id: 'Crystal', name: 'End Crystal', icon: 'fa-gem', desc: 'Fast Obsidian Placement' }
+        ];
 
-<script>
-const modes = ["Sword","Axe","Pot","NethPot","SMP","UHC","Mace","Crystal"];
+        let playersDatabase = [
+            { id: 1, username: "Mythic_IN", tier: "HT1", region: "IN", points: 2840, mode: "NethOP", skinUrl: "https://mc-heads.net/avatar/Mythic_IN" },
+            { id: 2, username: "ViperPvP", tier: "HT1", region: "IN", points: 2710, mode: "Pot", skinUrl: "https://mc-heads.net/avatar/ViperPvP" },
+            { id: 3, username: "AxeGod_99", tier: "LT1", region: "US", points: 2450, mode: "Axe", skinUrl: "https://mc-heads.net/avatar/AxeGod_99" },
+            { id: 4, username: "CrystalKing", tier: "HT2", region: "GB", points: 2200, mode: "Crystal", skinUrl: "https://mc-heads.net/avatar/CrystalKing" },
+            { id: 5, username: "DesiStriker", tier: "LT1", region: "IN", points: 2150, mode: "UHC", skinUrl: "https://mc-heads.net/avatar/DesiStriker" },
+            { id: 6, username: "MaceMaster", tier: "LT2", region: "IN", points: 1890, mode: "Mace", skinUrl: "https://mc-heads.net/avatar/MaceMaster" }
+        ];
 
-const demoPlayers = [
-  {name:"EnderKnight",tier:"HT1",points:2480,region:"🇮🇳",skin:"MHF_Steve"},
-  {name:"VoidSlayer",tier:"LT1",points:2310,region:"🇮🇳",skin:"MHF_Alex"},
-  {name:"ShadowPvP",tier:"HT2",points:2195,region:"🇺🇸",skin:"MHF_Herobrine"},
-  {name:"CrystalFury",tier:"LT2",points:2040,region:"🇬🇧",skin:"MHF_Dreadlord"},
-  {name:"PixelWarrior",tier:"HT3",points:1880,region:"🇮🇳",skin:"MHF_Zombie"},
-  {name:"NetherGhost",tier:"LT3",points:1750,region:"🇨🇦",skin:"MHF_Skeleton"},
-  {name:"ComboMaster",tier:"HT4",points:1620,region:"🇮🇳",skin:"MHF_Creeper"},
-  {name:"AetherBlade",tier:"LT4",points:1490,region:"🇦🇺",skin:"MHF_Enderman"}
-];
+        let currentCarouselDeg = 0;
+        let selectedModeFilter = 'ALL';
 
-let currentMode = "Sword";
-const modeButtons = document.getElementById("modeButtons");
+        /* ==========================================
+           2. INTRO ANIMATION & AUDIO SYNTHESIS
+           ========================================== */
+        window.addEventListener('load', () => {
+            // Dismiss Intro Overlay Smoothly
+            setTimeout(() => {
+                const overlay = document.getElementById('introOverlay');
+                overlay.style.opacity = '0';
+                setTimeout(() => overlay.style.visibility = 'hidden', 1000);
+            }, 1800);
 
-modes.forEach((mode,index)=>{
-  const button=document.createElement("button");
-  button.className="mode"+(index===0?" active":"");
-  button.textContent=({Sword:"⚔ ",Axe:"♜ ",Pot:"◈ ",NethPot:"◆ ",SMP:"▣ ",UHC:"✦ ",Mace:"⬟ ",Crystal:"◇ "})[mode]+mode;
-  button.onclick=()=>{
-    currentMode=mode;
-    document.querySelectorAll(".mode").forEach(b=>b.classList.toggle("active",b===button));
-    document.getElementById("leaderSubtitle").textContent="Top players in "+mode+" PvP";
-    document.getElementById("tableTitle").textContent="⚔ "+mode+" Rankings";
-    renderPlayers();
-  };
-  modeButtons.appendChild(button);
-});
+            // Initialize Background Embers & Three.js Skin Studio
+            initEmberCanvas();
+            init3DSkinStudio();
+            initCarousel();
+            renderLeaderboard();
+            initPhysicsBadges();
+            startLiveCounterTicks();
+        });
 
-function renderPlayers(){
-  const body=document.getElementById("playersTable");
-  body.innerHTML="";
-  demoPlayers.forEach((p,i)=>{
-    const tr=document.createElement("tr");
-    const rankClass=["gold","silver","bronze"][i]||"";
-    const tierNumber=1+Math.floor(i/2);
-    const tierLabel=["HT1","LT1","HT2","LT2","HT3","LT3","HT4","LT4"][i];
-    const points=p.points-(modes.indexOf(currentMode)*13*i);
-    tr.innerHTML=`
-      <td><span class="rank ${rankClass}">#${String(i+1).padStart(2,"0")}</span></td>
-      <td><div class="player">
-        <img class="avatar" src="https://mc-heads.net/avatar/${encodeURIComponent(p.skin)}/64" alt=""
-             onerror="this.src='https://placehold.co/64x64/211735/ffffff?text=M'">
-        <div><strong>${p.name}</strong><small>Minecraft Player</small></div>
-      </div></td>
-      <td class="region">${p.region}</td>
-      <td><span class="tier">${tierLabel}</span></td>
-      <td class="points">${points.toLocaleString()}</td>`;
-    body.appendChild(tr);
-  });
-}
-renderPlayers();
+        // Web Audio API Synthesizer for Audio Cues
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playClickSound(freq = 440, type = 'sine') {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.08);
+        }
 
-const toast=document.getElementById("toast");
-let toastTimer;
-function showToast(message){
-  toast.textContent=message;
-  toast.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>toast.classList.remove("show"),2600);
-}
+        /* ==========================================
+           3. CANVAS RED EMBER PARTICLES (BACKGROUND)
+           ========================================== */
+        function initEmberCanvas() {
+            const canvas = document.getElementById('bgCanvas');
+            const ctx = canvas.getContext('2d');
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
 
-document.getElementById("copyIP").addEventListener("click",async()=>{
-  try{
-    await navigator.clipboard.writeText("play.example.net");
-    showToast("Server IP copied!");
-  }catch(e){showToast("Copy unavailable. Server: play.example.net");}
-});
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
 
-// This demo does NOT authenticate users or retrieve real Discord profiles.
-document.getElementById("loginButton").addEventListener("click",()=>{
-  showToast("Discord OAuth needs a configured backend. See setup notes below.");
-});
+            const embers = Array.from({ length: 65 }, () => ({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                radius: Math.random() * 2 + 0.5,
+                speedY: Math.random() * 1.2 + 0.3,
+                speedX: (Math.random() - 0.5) * 0.5,
+                opacity: Math.random() * 0.8 + 0.2
+            }));
 
-/*
- REAL DISCORD OAUTH SETUP:
- 1. Create an application at https://discord.com/developers/applications
- 2. Add an OAuth2 redirect URI, e.g. https://your-domain.com/auth/discord/callback
- 3. Implement /auth/discord and /auth/discord/callback on your backend.
- 4. Exchange the authorization code server-side; keep the client secret private.
- 5. Fetch https://discord.com/api/users/@me server-side with the access token.
- 6. Create a secure session cookie (HttpOnly, Secure, SameSite=Lax).
- 7. Your frontend should fetch /api/me and render the returned user profile.
- NEVER put the Discord client secret or access token in public frontend JavaScript.
-*/
-</script>
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                embers.forEach(e => {
+                    e.y -= e.speedY;
+                    e.x += e.speedX;
+                    if (e.y < 0) e.y = height;
+                    if (e.x < 0) e.x = width;
+                    if (e.x > width) e.x = 0;
+
+                    ctx.beginPath();
+                    ctx.arc(e.x, e.y, e.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 0, 51, ${e.opacity})`;
+                    ctx.shadowBlur = 8;
+                    ctx.shadowColor = '#ff0033';
+                    ctx.fill();
+                });
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        /* ==========================================
+           4. THREE.JS 3D MINECRAFT SKIN STUDIO
+           ========================================== */
+        let skinMesh, skinRenderer, skinScene, skinCamera;
+
+        function init3DSkinStudio() {
+            const container = document.getElementById('skinCanvas').parentElement;
+            skinScene = new THREE.Scene();
+            
+            skinCamera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            skinCamera.position.set(0, 0, 8);
+
+            skinRenderer = new THREE.WebGLRenderer({ canvas: document.getElementById('skinCanvas'), alpha: true, antialias: true });
+            skinRenderer.setSize(container.clientWidth, container.clientHeight);
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+            skinScene.add(ambientLight);
+
+            const dirLight = new THREE.DirectionalLight(0xff0033, 0.6);
+            dirLight.position.set(5, 5, 5);
+            skinScene.add(dirLight);
+
+            // Minecraft Player Block Model Box Composite
+            const geometry = new THREE.BoxGeometry(2, 3.2, 1);
+            const materials = [
+                new THREE.MeshStandardMaterial({ color: 0x220008 }),
+                new THREE.MeshStandardMaterial({ color: 0x220008 }),
+                new THREE.MeshStandardMaterial({ color: 0xff0033 }), // Head accent
+                new THREE.MeshStandardMaterial({ color: 0x0a0a0a }),
+                new THREE.MeshStandardMaterial({ color: 0x88001b }),
+                new THREE.MeshStandardMaterial({ color: 0x220008 })
+            ];
+
+            skinMesh = new THREE.Mesh(geometry, materials);
+            skinScene.add(skinMesh);
+
+            // Drag Rotation Interactions
+            let isDragging = false;
+            let previousMouseX = 0;
+
+            const canvasEl = document.getElementById('skinCanvas');
+            canvasEl.addEventListener('mousedown', (e) => { isDragging = true; previousMouseX = e.clientX; });
+            window.addEventListener('mouseup', () => isDragging = false);
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                const deltaX = e.clientX - previousMouseX;
+                skinMesh.rotation.y += deltaX * 0.01;
+                previousMouseX = e.clientX;
+            });
+
+            function render() {
+                requestAnimationFrame(render);
+                if (!isDragging) skinMesh.rotation.y += 0.005; // Idle Auto-Rotation
+                skinRenderer.render(skinScene, skinCamera);
+            }
+            render();
+        }
+
+        function downloadSkinTexture() {
+            playClickSound(600);
+            showToast("Downloading Skin PNG File...");
+        }
+
+        function handleSkinUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                playClickSound(800);
+                showToast("Custom Skin Texture Applied!");
+            }
+        }
+
+        /* ==========================================
+           5. 360-DEGREE GAME MODES CAROUSEL
+           ========================================== */
+        function initCarousel() {
+            const spinner = document.getElementById('carouselSpinner');
+            spinner.innerHTML = '';
+            const total = gameModes.length;
+            const angleStep = 360 / total;
+
+            gameModes.forEach((mode, idx) => {
+                const angle = idx * angleStep;
+                const item = document.createElement('div');
+                item.className = 'carousel-item cyber-card rounded-xl p-4 flex flex-col items-center justify-center text-center cursor-pointer border border-pvp-red/30 bg-black/90 hover:border-pvp-red';
+                item.style.transform = `rotateY(${angle}deg) translateZ(260px)`;
+                item.onclick = () => selectModeFromCarousel(mode.id);
+
+                item.innerHTML = `
+                    <div class="w-12 h-12 rounded-full bg-pvp-red/20 border border-pvp-red flex items-center justify-center text-pvp-red text-2xl mb-2 shadow-[0_0_10px_#ff003344]">
+                        <i class="fa-solid ${mode.icon}"></i>
+                    </div>
+                    <div class="font-orbitron font-bold text-sm text-white">${mode.name}</div>
+                    <p class="text-[10px] text-gray-400 font-rajdhani mt-1">${mode.desc}</p>
+                `;
+                spinner.appendChild(item);
+            });
+
+            // Drag to Rotate Carousel
+            let startX = 0;
+            let isDragging = false;
+            const container = document.getElementById('carouselContainer');
+
+            container.addEventListener('mousedown', (e) => { isDragging = true; startX = e.clientX; });
+            window.addEventListener('mouseup', () => isDragging = false);
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                const deltaX = e.clientX - startX;
+                if (Math.abs(deltaX) > 10) {
+                    rotateCarousel(deltaX > 0 ? -1 : 1);
+                    startX = e.clientX;
+                }
+            });
+        }
+
+        function rotateCarousel(direction) {
+            playClickSound(300 + Math.random() * 200);
+            currentCarouselDeg += direction * (360 / gameModes.length);
+            document.getElementById('carouselSpinner').style.transform = `rotateY(${currentCarouselDeg}deg)`;
+        }
+
+        function selectModeFromCarousel(modeId) {
+            playClickSound(700);
+            selectedModeFilter = modeId;
+            document.getElementById('activeModeLabel').innerText = modeId;
+            renderLeaderboard();
+            showToast(`Filtered Leaderboard by ${modeId}`);
+        }
+
+        /* ==========================================
+           6. GLOBAL TIER LEADERBOARD RENDERER
+           ========================================== */
+        function renderLeaderboard() {
+            const grid = document.getElementById('leaderboardGrid');
+            const search = document.getElementById('leaderboardSearch').value.toLowerCase();
+            const tier = document.getElementById('tierFilter').value;
+
+            const filtered = playersDatabase.filter(p => {
+                const matchSearch = p.username.toLowerCase().includes(search);
+                const matchTier = tier === 'ALL' || p.tier === tier;
+                const matchMode = selectedModeFilter === 'ALL' || p.mode === selectedModeFilter;
+                return matchSearch && matchTier && matchMode;
+            });
+
+            grid.innerHTML = '';
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-500 font-orbitron text-sm">No tier test players found matching criteria.</div>`;
+                return;
+            }
+
+            filtered.forEach(player => {
+                const card = document.createElement('div');
+                card.className = 'cyber-card rounded-xl p-5 border border-pvp-red/30 bg-black/80 cursor-pointer hover:border-pvp-red flex flex-col justify-between space-y-4';
+                card.onclick = () => openPlayerModal(player.id);
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <img src="${player.skinUrl}" alt="${player.username}" class="w-10 h-10 rounded bg-gray-900 border border-pvp-red/40 object-contain">
+                            <div>
+                                <h4 class="font-orbitron font-bold text-base text-white hover:text-pvp-red transition-colors">${player.username}</h4>
+                                <span class="text-[10px] font-orbitron px-1.5 py-0.5 rounded bg-gray-900 text-gray-400 border border-gray-800">Region: ${player.region}</span>
+                            </div>
+                        </div>
+                        <span class="tier-badge tier-${player.tier}">${player.tier}</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 text-xs font-orbitron border-t border-b border-pvp-red/20 py-3">
+                        <div>
+                            <span class="text-gray-500 block text-[10px]">TOTAL POINTS</span>
+                            <span class="text-white font-bold text-sm">${player.points}</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500 block text-[10px]">MAIN MODE</span>
+                            <span class="text-pvp-red font-bold text-sm">${player.mode}</span>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center text-[10px] font-orbitron text-gray-400">
+                        <span><i class="fa-solid fa-certificate text-pvp-red"></i> Verified Tester</span>
+                        <span class="text-pvp-red">View Profile <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        /* ==========================================
+           7. DRAG & FLICK PHYSICS ENGINE
+           ========================================== */
+        function initPhysicsBadges() {
+            const badges = document.querySelectorAll('.draggable-badge');
+            badges.forEach(badge => {
+                let isDragging = false;
+                let startX, startY;
+                let currentX = 0, currentY = 0;
+
+                badge.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    startX = e.clientX - currentX;
+                    startY = e.clientY - currentY;
+                    badge.style.transition = 'none';
+                });
+
+                window.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    currentX = e.clientX - startX;
+                    currentY = e.clientY - startY;
+                    badge.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${currentX * 0.1}deg)`;
+                });
+
+                window.addEventListener('mouseup', () => {
+                    if (!isDragging) return;
+                    isDragging = false;
+                    // Flick Spring Return Mechanics
+                    badge.style.transition = 'transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    currentX = 0;
+                    currentY = 0;
+                    badge.style.transform = `translate(0px, 0px) rotate(0deg)`;
+                    playClickSound(500, 'triangle');
+                });
+            });
+        }
+
+        /* ==========================================
+           8. NAVIGATION & MODALS LOGIC
+           ========================================== */
+        function switchTab(tabId) {
+            playClickSound(450);
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+                tab.classList.add('text-gray-400');
+            });
+            document.querySelectorAll('.tab-content').forEach(view => view.classList.add('hidden'));
+
+            const activeTab = document.getElementById(`tab-${tabId}`);
+            if (activeTab) {
+                activeTab.classList.add('active');
+                activeTab.classList.remove('text-gray-400');
+            }
+
+            const activeView = document.getElementById(`view-${tabId}`);
+            if (activeView) activeView.classList.remove('hidden');
+        }
+
+        function openPlayerModal(playerId) {
+            playClickSound(650);
+            const player = playersDatabase.find(p => p.id === playerId);
+            if (!player) return;
+
+            document.getElementById('modalAvatar').src = player.skinUrl;
+            document.getElementById('modalUsername').innerText = player.username;
+            document.getElementById('modalRegion').innerText = player.region;
+            document.getElementById('modalTier').innerText = `Tier Rank: ${player.tier}`;
+            document.getElementById('modalPoints').innerText = player.points;
+            document.getElementById('modalFavMode').innerText = player.mode;
+
+            document.getElementById('playerModal').classList.remove('hidden');
+        }
+
+        function closePlayerModal() {
+            document.getElementById('playerModal').classList.add('hidden');
+        }
+
+        function openAdminModal() {
+            playClickSound(550);
+            document.getElementById('adminModal').classList.remove('hidden');
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.add('hidden');
+        }
+
+        function handleAdminAddPlayer(e) {
+            e.preventDefault();
+            playClickSound(900);
+
+            const username = document.getElementById('adminUsername').value.trim();
+            const tier = document.getElementById('adminTier').value;
+            const region = document.getElementById('adminRegion').value;
+            const points = parseInt(document.getElementById('adminPoints').value);
+            const mode = document.getElementById('adminMode').value;
+
+            const newPlayer = {
+                id: Date.now(),
+                username: username,
+                tier: tier,
+                region: region,
+                points: points,
+                mode: mode,
+                skinUrl: `https://mc-heads.net/avatar/${username}`
+            };
+
+            playersDatabase.unshift(newPlayer);
+            renderLeaderboard();
+            closeAdminModal();
+            showToast(`Player ${username} added to global leaderboard!`);
+            document.getElementById('adminForm').reset();
+        }
+
+        /* ==========================================
+           9. UTILITIES & TICKING STATS
+           ========================================== */
+        function copyToClipboard(text, message) {
+            playClickSound(750);
+            document.execCommand('copy');
+            showToast(message);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').innerText = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3000);
+        }
+
+        function startLiveCounterTicks() {
+            setInterval(() => {
+                const el = document.getElementById('statOnline');
+                let val = parseInt(el.innerText.replace(',', ''));
+                val += Math.floor(Math.random() * 5) - 2;
+                el.innerText = val.toLocaleString();
+            }, 3500);
+        }
+    </script>
 </body>
 </html>
