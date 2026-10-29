@@ -1,1153 +1,256 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PVP India | Minecraft Competitive Tier Testing Hub</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@500;600;700&family=Teko:wght@600;700&display=swap" rel="stylesheet">
-    <!-- Three.js for 3D Skin Rendering -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+from pathlib import Path
+import re
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        pvp: {
-                            red: '#ff0033',
-                            redGlow: '#ff2244',
-                            darkRed: '#88001b',
-                            cardBg: '#0a0a0a',
-                            borderRed: '#ff003344',
-                            saffron: '#FF9933',
-                            green: '#138808'
-                        }
-                    },
-                    fontFamily: {
-                        orbitron: ['Orbitron', 'sans-serif'],
-                        rajdhani: ['Rajdhani', 'sans-serif'],
-                        teko: ['Teko', 'sans-serif']
-                    }
-                }
-            }
-        }
-    </script>
+src = Path("/mnt/data/pvp_india_competitive_hub.html")
+if not src.exists():
+    candidates = list(Path("/mnt/data").glob("*.html"))
+    raise FileNotFoundError(f"Could not find pvp_india_competitive_hub.html. Available HTML files: {[p.name for p in candidates]}")
 
-    <style>
-        /* Base Reset & Core Theme */
-        * {
-            user-select: none;
-            -webkit-user-select: none;
-            box-sizing: border-box;
-        }
-        
-        body, html {
-            background-color: #000000 !important;
-            color: #ffffff;
-            font-family: 'Rajdhani', sans-serif;
-            overflow-x: hidden;
-            margin: 0;
-            padding: 0;
-        }
+html = src.read_text(encoding="utf-8", errors="replace")
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #000000;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #ff0033;
-            border-radius: 3px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #ff2244;
-            box-shadow: 0 0 10px #ff0033;
-        }
+# Neutral grayscale theme; keep the original site's layout and features.
+html = html.replace("#ff2b2b", "#a3a3a3").replace("#ff3333", "#a3a3a3").replace("#ff0000", "#a3a3a3")
+html = html.replace("#ff4d4d", "#b8b8b8").replace("#e60000", "#8a8a8a").replace("#cc0000", "#777777")
 
-        /* Ambient Ember Particle Canvas Background */
-        #bgCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 0;
-            pointer-events: none;
-        }
+neutral_css = r"""
+<style id="pvp-neutral-refresh">
+:root {
+  --pvp-bg: #090909;
+  --pvp-panel: #151515;
+  --pvp-panel-2: #202020;
+  --pvp-border: #383838;
+  --pvp-text: #d0d0d0;
+  --pvp-muted: #8d8d8d;
+  --pvp-accent: #a7a7a7;
+}
+html { scroll-behavior: smooth; scrollbar-color: #686868 #111; }
+body {
+  background: #090909 !important;
+  color: #bdbdbd !important;
+}
+body::before, body::after { animation: none !important; }
+* { scrollbar-width: thin; scrollbar-color: #686868 #111; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #111 !important; }
+::-webkit-scrollbar-thumb { background: #686868 !important; border-radius: 8px; border: 1px solid #111; }
+::-webkit-scrollbar-thumb:hover { background: #9a9a9a !important; }
+#bgCanvas, #emberCanvas, canvas#particles, .particle-background, .particles-bg { display: none !important; }
+button, a, input, select, textarea { accent-color: #999; }
+button, .btn, .button { transition: transform .22s ease, border-color .22s ease, background .22s ease, box-shadow .22s ease; }
+button:hover, .btn:hover, .button:hover { border-color: #aaa !important; }
+h1, h2, h3, h4, p, label, span, a, li, small, strong { text-shadow: none; }
+.text-red-500, .text-red-400, .text-red-600 { color: #b5b5b5 !important; }
+.bg-red-600, .bg-red-500, .bg-red-700 { background-color: #4b4b4b !important; }
+.border-red-500, .border-red-600, .border-red-400 { border-color: #777 !important; }
+.shadow-red-500\/50, .shadow-red-500\/30 { box-shadow: 0 0 18px #ffffff0a !important; }
+.pvp-neutral-panel { background: linear-gradient(145deg,#171717,#0d0d0d); border: 1px solid #343434; border-radius: 16px; }
+#pvpLoginModal, #pvpAdminPlayersPanel { color: #ccc; }
+#pvpLoginModal input, #pvpAdminPlayersPanel input { background: #101010; color: #ddd; border: 1px solid #414141; border-radius: 8px; padding: 10px 12px; width: 100%; }
+#pvpLoginModal button, #pvpAdminPlayersPanel button { background: #303030; border: 1px solid #555; color: #eee; border-radius: 8px; padding: 9px 13px; cursor: pointer; }
+#pvpLoginModal button:hover, #pvpAdminPlayersPanel button:hover { background: #444; }
+#pvpLoginTrigger { border: 1px solid #666; color: #ddd; background: #202020; padding: 9px 15px; border-radius: 9px; font-weight: 700; }
+#pvpMinecraftCharacter { width: min(100%, 520px); height: 390px; margin: auto; cursor: grab; touch-action: pan-y; }
+#pvpMinecraftCharacter:active { cursor: grabbing; }
+.pvp-admin-row { display:flex; gap:12px; align-items:center; justify-content:space-between; padding:10px; border-bottom:1px solid #333; }
+.pvp-admin-row button { white-space:nowrap; }
+</style>
+"""
+if "</head>" in html:
+    html = html.replace("</head>", neutral_css + "\n</head>", 1)
+else:
+    html = neutral_css + html
 
-        /* Dynamic Title Styling */
-        .pvp-text-glitch {
-            font-family: 'Orbitron', sans-serif;
-            color: #ff0033;
-            text-shadow: 0 0 10px #ff0033, 0 0 20px #ff0033, 0 0 30px #88001b;
-            animation: redGlowPulse 2s infinite alternate;
-        }
+# Remove the old animated ember/point background initializer and canvas element where safely identifiable.
+html = re.sub(r'<canvas[^>]+id=["\']bgCanvas["\'][^>]*>\s*</canvas>', '', html, flags=re.I)
+html = re.sub(r'(?m)^\s*initEmberCanvas\(\);\s*$', '// Animated point background disabled for the neutral static theme.', html)
 
-        @keyframes redGlowPulse {
-            0% { text-shadow: 0 0 8px #ff0033, 0 0 15px #ff0033; }
-            100% { text-shadow: 0 0 18px #ff2244, 0 0 35px #ff0033, 0 0 50px #ff0033; }
-        }
+# Add a header login trigger near the existing OP Panel button if possible.
+login_button = '<button id="pvpLoginTrigger" type="button" onclick="pvpOpenLogin()">LOGIN</button>'
+if 'id="pvpLoginTrigger"' not in html:
+    op_match = re.search(r'<button[^>]*(?:openAdminModal|OP Panel|OP PANEL)[\s\S]{0,300?</button>', html, re.I)
+    if op_match:
+        html = html[:op_match.end()] + "\n" + login_button + html[op_match.end():]
+    else:
+        # Insert into a header/nav if we cannot reliably locate the existing OP button.
+        nav_end = re.search(r'</nav>', html, re.I)
+        header_end = re.search(r'</header>', html, re.I)
+        target = nav_end or header_end
+        if target:
+            html = html[:target.start()] + login_button + "\n" + html[target.start():]
 
-        .patriotic-india {
-            font-family: 'Orbitron', sans-serif;
-            background: linear-gradient(130deg, #FF9933 10%, #FFFFFF 50%, #138808 90%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            position: relative;
-            display: inline-block;
-            filter: drop-shadow(0 0 8px rgba(255,255,255,0.3));
-        }
-
-        /* Chakra Motif Watermark Icon */
-        .chakra-motif {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            opacity: 0.15;
-            width: 1.8em;
-            height: 1.8em;
-            border: 2px dashed #000080;
-            border-radius: 50%;
-            pointer-events: none;
-            animation: spinChakra 20s linear infinite;
-        }
-        @keyframes spinChakra { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
-
-        /* Interactive Navigation Tabs */
-        .nav-tab {
-            position: relative;
-            background: #0d0d0d;
-            border: 1px solid #ff003333;
-            border-top: 3px solid #ff0033;
-            transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
-            transform-origin: top center;
-            top: 0;
-        }
-        .nav-tab:hover {
-            top: 8px; /* Shifts down while connected to top border */
-            background: #180306;
-            border-color: #ff0033;
-            box-shadow: 0 8px 25px rgba(255, 0, 51, 0.4);
-            color: #ffffff;
-        }
-        .nav-tab.active {
-            top: 10px;
-            background: #220008;
-            border-color: #ff0033;
-            border-top-width: 4px;
-            box-shadow: 0 10px 30px rgba(255, 0, 51, 0.6);
-            color: #ffffff;
-        }
-
-        /* Glassmorphic Cyber Gaming Cards */
-        .cyber-card {
-            background: rgba(10, 10, 10, 0.85);
-            border: 1px solid rgba(255, 0, 51, 0.25);
-            backdrop-filter: blur(12px);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .cyber-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 2px;
-            background: linear-gradient(90deg, transparent, #ff0033, transparent);
-            transition: 0.5s;
-        }
-        .cyber-card:hover::before {
-            left: 100%;
-        }
-        .cyber-card:hover {
-            border-color: rgba(255, 0, 51, 0.8);
-            box-shadow: 0 0 25px rgba(255, 0, 51, 0.25);
-            transform: translateY(-2px);
-        }
-
-        /* Custom Physics Physics Draggable Elements */
-        .draggable-badge {
-            cursor: grab;
-            transition: transform 0.05s ease-out;
-            touch-action: none;
-        }
-        .draggable-badge:active {
-            cursor: grabbing;
-        }
-
-        /* Pulsing Status Light */
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background-color: #ff0033;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #ff0033, 0 0 15px #ff0033;
-            animation: blink 1.2s infinite;
-        }
-        @keyframes blink {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.3; transform: scale(0.85); }
-        }
-
-        /* 360 Spin Game Mode Carousel */
-        .carousel-container {
-            perspective: 1200px;
-            width: 100%;
-            height: 280px;
-            position: relative;
-        }
-        .carousel-spinner {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            transform-style: preserve-3d;
-            transition: transform 0.1s ease-out;
-        }
-        .carousel-item {
-            position: absolute;
-            width: 200px;
-            height: 220px;
-            left: 50%;
-            top: 10%;
-            margin-left: -100px;
-            transform-style: preserve-3d;
-        }
-
-        /* Custom Tier Badges */
-        .tier-badge {
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 800;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-        .tier-HT1 { background: linear-gradient(135deg, #ff0033, #88001b); color: #fff; border: 1px solid #ff4466; box-shadow: 0 0 10px #ff003388; }
-        .tier-LT1 { background: linear-gradient(135deg, #cc002b, #44000d); color: #ffcccc; border: 1px solid #ff003344; }
-        .tier-HT2 { background: linear-gradient(135deg, #e65c00, #803300); color: #fff; border: 1px solid #ff8533; }
-        .tier-LT2 { background: #1a1a1a; color: #ff9966; border: 1px solid #e65c0066; }
-        .tier-HT3 { background: #262626; color: #cccccc; border: 1px solid #666; }
-
-        /* Intro Screen Mask */
-        #introOverlay {
-            position: fixed;
-            inset: 0;
-            background-color: #000000;
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 1s cubic-bezier(0.77, 0, 0.175, 1), visibility 1s;
-        }
-        
-        .intro-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 6rem;
-            font-weight: 900;
-            letter-spacing: 15px;
-            background: linear-gradient(90deg, #FF9933, #FFFFFF, #138808);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: introZoomGlow 2.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            filter: drop-shadow(0 0 35px rgba(255, 0, 51, 0.8));
-        }
-
-        @keyframes introZoomGlow {
-            0% { transform: scale(0.6); opacity: 0; filter: blur(20px) drop-shadow(0 0 0px #ff0033); }
-            50% { opacity: 1; filter: blur(0px) drop-shadow(0 0 40px #ff0033); }
-            100% { transform: scale(1.1); opacity: 0.95; filter: drop-shadow(0 0 60px #ff0033); }
-        }
-
-        /* Modal Overlay Animations */
-        .modal-backdrop {
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
-        }
-    </style>
-</head>
-<body class="relative min-h-screen text-gray-100 selection:bg-pvp-red selection:text-white">
-
-    <!-- Canvas Background Ambient Embers -->
-    <canvas id="bgCanvas"></canvas>
-
-    <!-- Initial Intro Screen Overlay -->
-    <div id="introOverlay">
-        <div class="text-center relative">
-            <h1 class="intro-title select-none">INDIA</h1>
-            <p class="font-orbitron text-pvp-red tracking-widest text-sm mt-4 uppercase animate-pulse">
-                [ Competitive PvP Tier Testing System ]
-            </p>
-        </div>
+# Add login portal, admin management panel, and interaction script before body close.
+addon = r"""
+<div id="pvpLoginModal" role="dialog" aria-modal="true" aria-labelledby="pvpLoginTitle" style="display:none;position:fixed;inset:0;z-index:99999;background:#000c;align-items:center;justify-content:center;padding:20px">
+  <div class="pvp-neutral-panel" style="width:min(100%,420px);padding:24px;box-shadow:0 20px 80px #000">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+      <h2 id="pvpLoginTitle" style="margin:0;color:#eee">Player Login</h2>
+      <button type="button" onclick="pvpCloseLogin()" aria-label="Close login">✕</button>
     </div>
-
-    <!-- MAIN APP CONTAINER -->
-    <div id="appContainer" class="relative z-10 min-h-screen flex flex-col justify-between">
-        
-        <!-- HEADER / NAVIGATION SECTION -->
-        <header class="sticky top-0 z-40 bg-black/90 border-b border-pvp-red/30 backdrop-blur-md px-4 lg:px-12 py-3 flex flex-wrap items-center justify-between gap-4">
-            
-            <!-- Logo Section -->
-            <div class="flex items-center gap-3 cursor-pointer group" onclick="switchTab('tier-test')">
-                <div class="w-10 h-10 rounded bg-black border border-pvp-red flex items-center justify-center shadow-[0_0_15px_#ff003366] group-hover:scale-105 transition-transform">
-                    <i class="fa-solid fa-shield-halved text-pvp-red text-xl"></i>
-                </div>
-                <div class="flex flex-col">
-                    <div class="text-2xl font-black tracking-wider flex items-center gap-1">
-                        <span class="pvp-text-glitch">PVP</span>
-                        <span class="patriotic-india ml-1">INDIA
-                            <span class="chakra-motif"></span>
-                        </span>
-                    </div>
-                    <span class="text-[9px] font-orbitron tracking-widest text-gray-400 -mt-1 uppercase">Official Tier Directory</span>
-                </div>
-            </div>
-
-            <!-- Navigation Tabs (Dynamic Shift-Down Anchored to Top Border) -->
-            <nav class="flex items-center gap-2 sm:gap-4 overflow-x-auto py-1">
-                <button onclick="switchTab('tier-test')" id="tab-tier-test" class="nav-tab active px-5 py-2 rounded-b-lg font-orbitron text-xs sm:text-sm font-semibold tracking-wider uppercase flex items-center gap-2">
-                    <i class="fa-solid fa-trophy text-pvp-red"></i> Tier Test
-                </button>
-                <button onclick="switchTab('event')" id="tab-event" class="nav-tab px-5 py-2 rounded-b-lg font-orbitron text-xs sm:text-sm font-semibold tracking-wider uppercase flex items-center gap-2 text-gray-400">
-                    <i class="fa-solid fa-calendar-check text-pvp-red"></i> Events
-                </button>
-                <button onclick="switchTab('mod')" id="tab-mod" class="nav-tab px-5 py-2 rounded-b-lg font-orbitron text-xs sm:text-sm font-semibold tracking-wider uppercase flex items-center gap-2 text-gray-400">
-                    <i class="fa-solid fa-cubes text-pvp-red"></i> Mods
-                </button>
-                <button onclick="switchTab('server')" id="tab-server" class="nav-tab px-5 py-2 rounded-b-lg font-orbitron text-xs sm:text-sm font-semibold tracking-wider uppercase flex items-center gap-2 text-gray-400">
-                    <i class="fa-solid fa-server text-pvp-red"></i> Server IP
-                </button>
-            </nav>
-
-            <!-- Quick Action / Admin Panel Trigger Button -->
-            <div class="flex items-center gap-3">
-                <button onclick="openAdminModal()" class="px-3 py-1.5 rounded bg-pvp-red/10 border border-pvp-red/50 hover:bg-pvp-red hover:text-black font-orbitron text-xs tracking-wider transition-all shadow-[0_0_10px_#ff003333] flex items-center gap-2">
-                    <i class="fa-solid fa-user-gear"></i> OP Panel
-                </button>
-            </div>
-        </header>
-
-        <!-- DYNAMIC PAGE BODY CONTENT -->
-        <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
-
-            <!-- SECTION 1: LIVE STATS WIDGETS & PHYSICS BADGES -->
-            <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Discord Counter Widget -->
-                <div class="cyber-card rounded-xl p-5 flex items-center justify-between border-l-4 border-l-pvp-red">
-                    <div class="space-y-1">
-                        <div class="flex items-center gap-2 text-xs font-orbitron text-gray-400 uppercase tracking-widest">
-                            <span class="status-dot"></span> Discord Members
-                        </div>
-                        <div class="text-3xl font-orbitron font-bold text-white tracking-tight" id="statDiscord">12,480</div>
-                        <p class="text-xs text-gray-500 font-rajdhani">Active in #tier-testing</p>
-                    </div>
-                    <div class="w-12 h-12 rounded-lg bg-pvp-red/10 border border-pvp-red/30 flex items-center justify-center text-pvp-red text-2xl">
-                        <i class="fa-brands fa-discord"></i>
-                    </div>
-                </div>
-
-                <!-- Online Web Players Widget -->
-                <div class="cyber-card rounded-xl p-5 flex items-center justify-between border-l-4 border-l-pvp-red">
-                    <div class="space-y-1">
-                        <div class="flex items-center gap-2 text-xs font-orbitron text-gray-400 uppercase tracking-widest">
-                            <span class="status-dot"></span> Live Queue Players
-                        </div>
-                        <div class="text-3xl font-orbitron font-bold text-white tracking-tight" id="statOnline">1,240</div>
-                        <p class="text-xs text-gray-500 font-rajdhani">Currently in matches</p>
-                    </div>
-                    <div class="w-12 h-12 rounded-lg bg-pvp-red/10 border border-pvp-red/30 flex items-center justify-center text-pvp-red text-2xl">
-                        <i class="fa-solid fa-users-rays"></i>
-                    </div>
-                </div>
-
-                <!-- Peak Stats Widget -->
-                <div class="cyber-card rounded-xl p-5 flex items-center justify-between border-l-4 border-l-pvp-red">
-                    <div class="space-y-1">
-                        <div class="flex items-center gap-2 text-xs font-orbitron text-gray-400 uppercase tracking-widest">
-                            <span class="status-dot"></span> Peak Daily Stats
-                        </div>
-                        <div class="text-3xl font-orbitron font-bold text-white tracking-tight" id="statPeak">4,892</div>
-                        <p class="text-xs text-gray-500 font-rajdhani">24h Record Peak</p>
-                    </div>
-                    <div class="w-12 h-12 rounded-lg bg-pvp-red/10 border border-pvp-red/30 flex items-center justify-center text-pvp-red text-2xl">
-                        <i class="fa-solid fa-chart-line"></i>
-                    </div>
-                </div>
-            </section>
-
-            <!-- INTERACTIVE DRAG & FLICK PHYSICS SECTION -->
-            <section class="cyber-card rounded-xl p-4 flex flex-wrap items-center justify-between gap-4 border border-pvp-red/20 bg-black/60">
-                <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-hand-pointer text-pvp-red animate-bounce"></i>
-                    <span class="font-orbitron text-xs text-gray-300 uppercase tracking-wider">Physics Playground: Click & Drag Badges to Flick Them!</span>
-                </div>
-                <div class="flex flex-wrap items-center gap-4">
-                    <div class="draggable-badge px-4 py-1.5 rounded-full bg-pvp-red/20 border border-pvp-red text-pvp-red font-orbitron text-xs font-bold tracking-widest shadow-[0_0_10px_#ff003344]">
-                        #1 IN REGION
-                    </div>
-                    <div class="draggable-badge px-4 py-1.5 rounded-full bg-white/10 border border-white/30 text-white font-orbitron text-xs font-bold tracking-widest">
-                        SEASON 4 LIVE
-                    </div>
-                    <div class="draggable-badge px-4 py-1.5 rounded-full bg-pvp-red/20 border border-pvp-red text-pvp-red font-orbitron text-xs font-bold tracking-widest shadow-[0_0_10px_#ff003344]">
-                        HT1 VERIFIED
-                    </div>
-                </div>
-            </section>
-
-            <!-- TAB CONTENT 1: TIER TEST (MAIN VIEW) -->
-            <div id="view-tier-test" class="tab-content space-y-12">
-
-                <!-- SECTION 2: 3D SKIN STUDIO & GAME MODES CAROUSEL GRID -->
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                    
-                    <!-- 3D Minecraft Skin Customization Box (4 Cols) -->
-                    <div class="lg:col-span-4 cyber-card rounded-xl p-6 flex flex-col items-center justify-between border border-pvp-red/40 bg-black/80">
-                        <div class="w-full flex items-center justify-between border-b border-pvp-red/30 pb-3 mb-4">
-                            <h3 class="font-orbitron font-bold text-lg text-white flex items-center gap-2">
-                                <i class="fa-solid fa-user-ninja text-pvp-red"></i> 3D Skin Preview
-                            </h3>
-                            <span class="text-[10px] font-orbitron px-2 py-0.5 rounded bg-pvp-red/20 text-pvp-red border border-pvp-red/40">Interactive</span>
-                        </div>
-
-                        <!-- 3D WebGL Canvas Container -->
-                        <div class="relative w-full h-64 bg-gradient-to-b from-black via-pvp-darkRed/20 to-black rounded-lg border border-pvp-red/20 flex items-center justify-center overflow-hidden group cursor-grab active:cursor-grabbing">
-                            <canvas id="skinCanvas" class="w-full h-full"></canvas>
-                            <div class="absolute bottom-2 left-2 text-[10px] font-orbitron text-gray-500 pointer-events-none">
-                                <i class="fa-solid fa-rotate"></i> Drag to spin avatar
-                            </div>
-                        </div>
-
-                        <!-- Action Buttons: Download & Upload Skin -->
-                        <div class="w-full grid grid-cols-2 gap-3 mt-6">
-                            <button onclick="downloadSkinTexture()" class="px-4 py-2 rounded.bg-black border border-pvp-red/60 hover:bg-pvp-red/20 text-white font-orbitron text-xs font-semibold tracking-wider transition-all flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-download text-pvp-red"></i> Download
-                            </button>
-                            <label class="px-4 py-2 rounded bg-pvp-red border border-pvp-red hover:bg-pvp-redGlow text-white font-orbitron text-xs font-bold tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2 shadow-[0_0_15px_#ff003366]">
-                                <i class="fa-solid fa-upload"></i> Upload PNG
-                                <input type="file" id="skinUploadInput" accept="image/png" class="hidden" onchange="handleSkinUpload(event)">
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Interactive 360-Degree Game Modes Carousel (8 Cols) -->
-                    <div class="lg:col-span-8 cyber-card rounded-xl p-6 border border-pvp-red/40 bg-black/80 flex flex-col justify-between">
-                        <div class="flex flex-wrap items-center justify-between border-b border-pvp-red/30 pb-3 mb-2 gap-2">
-                            <div>
-                                <h3 class="font-orbitron font-bold text-lg text-white flex items-center gap-2">
-                                    <i class="fa-solid fa-gamepad text-pvp-red"></i> PvP Game Modes
-                                </h3>
-                                <p class="text-xs text-gray-400 font-rajdhani">Drag horizontally or click arrows to spin modes with sound cues</p>
-                            </div>
-                            <!-- Carousel Control Arrows -->
-                            <div class="flex items-center gap-2">
-                                <button onclick="rotateCarousel(-1)" class="w-8 h-8 rounded bg-black border border-pvp-red/50 hover:bg-pvp-red text-white flex items-center justify-center transition-all">
-                                    <i class="fa-solid fa-chevron-left"></i>
-                                </button>
-                                <button onclick="rotateCarousel(1)" class="w-8 h-8 rounded bg-black border border-pvp-red/50 hover:bg-pvp-red text-white flex items-center justify-center transition-all">
-                                    <i class="fa-solid fa-chevron-right"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- 3D Carousel Stage -->
-                        <div class="carousel-container my-4" id="carouselContainer">
-                            <div class="carousel-spinner" id="carouselSpinner">
-                                <!-- Dynamic Mode Cards Injected by JS -->
-                            </div>
-                        </div>
-
-                        <div class="text-center font-orbitron text-xs text-gray-500 uppercase tracking-widest pt-2 border-t border-pvp-red/20">
-                            Active Mode Filter: <span id="activeModeLabel" class="text-pvp-red font-bold">ALL MODES</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SECTION 3: GLOBAL TIER LEADERBOARD -->
-                <div class="space-y-6">
-                    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-pvp-red/30 pb-4">
-                        <div>
-                            <h2 class="font-orbitron text-2xl font-black tracking-wider text-white flex items-center gap-3">
-                                <i class="fa-solid fa-ranking-star text-pvp-red"></i> GLOBAL TIER LEADERBOARD
-                            </h2>
-                            <p class="text-xs text-gray-400 font-rajdhani">Verified competitive players ranked by performance & tier tests</p>
-                        </div>
-                        
-                        <!-- Search & Filter Controls -->
-                        <div class="flex items-center gap-3 w-full sm:w-auto">
-                            <div class="relative w-full sm:w-64">
-                                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
-                                <input type="text" id="leaderboardSearch" oninput="renderLeaderboard()" placeholder="Search player username..." class="w-full bg-black border border-pvp-red/40 rounded pl-9 pr-4 py-1.5 text-xs font-orbitron text-white focus:outline-none focus:border-pvp-red">
-                            </div>
-                            <select id="tierFilter" onchange="renderLeaderboard()" class="bg-black border border-pvp-red/40 rounded px-3 py-1.5 text-xs font-orbitron text-white focus:outline-none focus:border-pvp-red">
-                                <option value="ALL">All Tiers</option>
-                                <option value="HT1">Tier HT1</option>
-                                <option value="LT1">Tier LT1</option>
-                                <option value="HT2">Tier HT2</option>
-                                <option value="LT2">Tier LT2</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Dynamic Player Cards Grid -->
-                    <div id="leaderboardGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <!-- Rendered by JavaScript -->
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- TAB CONTENT 2: EVENTS -->
-            <div id="view-event" class="tab-content hidden space-y-6">
-                <h2 class="font-orbitron text-2xl font-black text-white flex items-center gap-3 border-b border-pvp-red/30 pb-4">
-                    <i class="fa-solid fa-trophy text-pvp-red"></i> UPCOMING PVP TOURNAMENTS
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="cyber-card rounded-xl p-6 border-l-4 border-l-pvp-red space-y-4">
-                        <div class="flex justify-between items-start">
-                            <span class="px-3 py-1 rounded bg-pvp-red/20 text-pvp-red border border-pvp-red text-xs font-orbitron font-bold">1v1 NethOP Cup</span>
-                            <span class="text-xs font-orbitron text-gray-400"><i class="fa-solid fa-clock"></i> Starts in 2 days</span>
-                        </div>
-                        <h3 class="font-orbitron text-xl font-bold text-white">India Championship S4</h3>
-                        <p class="text-sm text-gray-300">Single elimination bracket with HT1 verified referees. ₹25,000 INR Prize Pool + Special Discord Roles.</p>
-                        <button class="w-full py-2 bg-pvp-red hover:bg-pvp-redGlow font-orbitron text-xs font-bold text-white rounded transition-all shadow-[0_0_15px_#ff003366]">REGISTER FOR TOURNAMENT</button>
-                    </div>
-                    <div class="cyber-card rounded-xl p-6 border-l-4 border-l-pvp-red space-y-4">
-                        <div class="flex justify-between items-start">
-                            <span class="px-3 py-1 rounded bg-pvp-red/20 text-pvp-red border border-pvp-red text-xs font-orbitron font-bold">Crystal PvP Draft</span>
-                            <span class="text-xs font-orbitron text-gray-400"><i class="fa-solid fa-clock"></i> Next Weekend</span>
-                        </div>
-                        <h3 class="font-orbitron text-xl font-bold text-white">2v2 Crystal Blitz</h3>
-                        <p class="text-sm text-gray-300">Fast-paced 2v2 crystal grid match. Custom anti-cheat server provided for all rounds.</p>
-                        <button class="w-full py-2 bg-pvp-red hover:bg-pvp-redGlow font-orbitron text-xs font-bold text-white rounded transition-all shadow-[0_0_15px_#ff003366]">JOIN WAITING LIST</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB CONTENT 3: MODS -->
-            <div id="view-mod" class="tab-content hidden space-y-6">
-                <h2 class="font-orbitron text-2xl font-black text-white flex items-center gap-3 border-b border-pvp-red/30 pb-4">
-                    <i class="fa-solid fa-cubes text-pvp-red"></i> ALLOWED COMPETITIVE MODPACKS
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="cyber-card rounded-xl p-6 space-y-3">
-                        <div class="text-pvp-red text-3xl"><i class="fa-solid fa-bolt"></i></div>
-                        <h3 class="font-orbitron text-lg font-bold text-white">PVP India Client v3.2</h3>
-                        <p class="text-xs text-gray-400">Official Lunar/Fabric modpack containing optimized HUD, keystrokes, and hit-color adjustments.</p>
-                        <button onclick="copyToClipboard('https://pvpindia.net/mods/modpack.zip', 'Modpack link copied!')" class="w-full py-2 bg-black border border-pvp-red/50 hover:bg-pvp-red text-white font-orbitron text-xs rounded transition-all">DOWNLOAD PACK</button>
-                    </div>
-                    <div class="cyber-card rounded-xl p-6 space-y-3">
-                        <div class="text-pvp-red text-3xl"><i class="fa-solid fa-shield-cat"></i></div>
-                        <h3 class="font-orbitron text-lg font-bold text-white">Anti-Cheat Core Mod</h3>
-                        <p class="text-xs text-gray-400">Mandatory client-side integrity checker required for HT1/LT1 official tier tests.</p>
-                        <button onclick="copyToClipboard('https://pvpindia.net/mods/anticheat.jar', 'Anti-cheat link copied!')" class="w-full py-2 bg-black border border-pvp-red/50 hover:bg-pvp-red text-white font-orbitron text-xs rounded transition-all">DOWNLOAD JAR</button>
-                    </div>
-                    <div class="cyber-card rounded-xl p-6 space-y-3">
-                        <div class="text-pvp-red text-3xl"><i class="fa-solid fa-crosshair"></i></div>
-                        <h3 class="font-orbitron text-lg font-bold text-white">Custom Dynamic Crosshair</h3>
-                        <p class="text-xs text-gray-400">Custom SVG red crosshair overlay used by top India tier players for optimal aim tracking.</p>
-                        <button onclick="copyToClipboard('https://pvpindia.net/mods/crosshair.zip', 'Crosshair pack copied!')" class="w-full py-2 bg-black border border-pvp-red/50 hover:bg-pvp-red text-white font-orbitron text-xs rounded transition-all">DOWNLOAD MOD</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB CONTENT 4: SERVER IP -->
-            <div id="view-server" class="tab-content hidden space-y-6">
-                <div class="cyber-card rounded-xl p-8 max-w-2xl mx-auto text-center space-y-6 border border-pvp-red">
-                    <div class="w-16 h-16 rounded-full bg-pvp-red/20 border border-pvp-red flex items-center justify-center mx-auto text-pvp-red text-3xl shadow-[0_0_20px_#ff003388]">
-                        <i class="fa-solid fa-network-wired"></i>
-                    </div>
-                    <div>
-                        <h2 class="font-orbitron text-3xl font-black text-white">CONNECT TO SERVER</h2>
-                        <p class="text-sm text-gray-400 font-rajdhani mt-1">Official Low-Latency India Minecraft PvP Testing Network</p>
-                    </div>
-                    <div class="p-4 bg-black rounded-lg border border-pvp-red/40 flex items-center justify-between gap-4">
-                        <code id="serverIpText" class="font-orbitron text-lg text-pvp-red font-bold tracking-widest">play.pvpindia.net</code>
-                        <button onclick="copyToClipboard('play.pvpindia.net', 'Server IP Copied to Clipboard!')" class="px-4 py-2 bg-pvp-red hover:bg-pvp-redGlow text-white font-orbitron text-xs font-bold rounded transition-all shadow-[0_0_10px_#ff003366]">
-                            <i class="fa-solid fa-copy"></i> COPY IP
-                        </button>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4 text-left font-orbitron text-xs text-gray-400 pt-4 border-t border-pvp-red/20">
-                        <div><i class="fa-solid fa-check text-pvp-red"></i> Version: 1.18.2 - 1.20.x</div>
-                        <div><i class="fa-solid fa-check text-pvp-red"></i> Location: Mumbai, India</div>
-                        <div><i class="fa-solid fa-check text-pvp-red"></i> Tickrate: 20.0 TPS Fixed</div>
-                        <div><i class="fa-solid fa-check text-pvp-red"></i> Anti-Cheat: GrimAC Custom</div>
-                    </div>
-                </div>
-            </div>
-
-        </main>
-
-        <!-- FOOTER SECTION -->
-        <footer class="bg-black border-t border-pvp-red/30 py-6 px-4 text-center space-y-2">
-            <div class="flex items-center justify-center gap-2 font-orbitron text-sm">
-                <span class="pvp-text-glitch">PVP</span>
-                <span class="patriotic-india">INDIA</span>
-            </div>
-            <p class="text-xs text-gray-500 font-rajdhani">Not affiliated with Mojang AB or Microsoft. Designed for Competitive Minecraft Players.</p>
-        </footer>
-    </div>
-
-    <!-- PLAYER PROFILE MODAL -->
-    <div id="playerModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4">
-        <div class="cyber-card rounded-xl max-w-lg w-full bg-black border-2 border-pvp-red p-6 space-y-6 relative animate-in fade-in zoom-in duration-200">
-            <button onclick="closePlayerModal()" class="absolute top-4 right-4 text-gray-400 hover:text-pvp-red text-xl">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <div class="flex items-center gap-4">
-                <div class="w-16 h-16 rounded bg-pvp-red/20 border border-pvp-red flex items-center justify-center overflow-hidden">
-                    <img id="modalAvatar" src="" alt="Skin" class="w-12 h-12 object-contain">
-                </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <h3 id="modalUsername" class="font-orbitron text-2xl font-black text-white">--</h3>
-                        <span id="modalRegion" class="text-xs px-2 py-0.5 rounded bg-gray-800 text-gray-300 font-orbitron">--</span>
-                    </div>
-                    <p id="modalTier" class="text-xs font-orbitron text-pvp-red font-bold">--</p>
-                </div>
-            </div>
-
-            <!-- Modal Stats Grid -->
-            <div class="grid grid-cols-2 gap-3 text-center">
-                <div class="p-3 bg-pvp-red/10 border border-pvp-red/30 rounded">
-                    <div class="text-xs font-orbitron text-gray-400">Total Points</div>
-                    <div id="modalPoints" class="text-xl font-orbitron font-bold text-white">0</div>
-                </div>
-                <div class="p-3 bg-pvp-red/10 border border-pvp-red/30 rounded">
-                    <div class="text-xs font-orbitron text-gray-400">Favorite Mode</div>
-                    <div id="modalFavMode" class="text-xl font-orbitron font-bold text-pvp-red">--</div>
-                </div>
-            </div>
-
-            <!-- Recent Match History -->
-            <div class="space-y-2">
-                <h4 class="font-orbitron text-xs text-gray-400 uppercase tracking-widest">Recent Tier Test Matches</h4>
-                <div class="space-y-1.5 text-xs font-orbitron">
-                    <div class="p-2 bg-gray-900 rounded flex justify-between items-center border-l-2 border-green-500">
-                        <span>VS Blitz_PvP (NethOP 1v1)</span>
-                        <span class="text-green-400 font-bold">VICTORY (3-1)</span>
-                    </div>
-                    <div class="p-2 bg-gray-900 rounded flex justify-between items-center border-l-2 border-pvp-red">
-                        <span>VS Alpha_God (Pot PvP)</span>
-                        <span class="text-pvp-red font-bold">DEFEAT (2-3)</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ADMIN / OPERATOR DASHBOARD MODAL -->
-    <div id="adminModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4">
-        <div class="cyber-card rounded-xl max-w-md w-full bg-black border-2 border-pvp-red p-6 space-y-6 relative">
-            <button onclick="closeAdminModal()" class="absolute top-4 right-4 text-gray-400 hover:text-pvp-red text-xl">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            
-            <div class="border-b border-pvp-red/30 pb-3">
-                <h3 class="font-orbitron text-xl font-black text-white flex items-center gap-2">
-                    <i class="fa-solid fa-user-shield text-pvp-red"></i> OP ADMIN CONTROLLER
-                </h3>
-                <p class="text-xs text-gray-400 font-rajdhani">Add or update real-time player tiers in the live database</p>
-            </div>
-
-            <form id="adminForm" onsubmit="handleAdminAddPlayer(event)" class="space-y-4 font-orbitron text-xs">
-                <div>
-                    <label class="block text-gray-400 mb-1">Minecraft Username</label>
-                    <input type="text" id="adminUsername" required placeholder="e.g. GamerTag99" class="w-full bg-gray-900 border border-pvp-red/40 rounded px-3 py-2 text-white focus:outline-none focus:border-pvp-red">
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-gray-400 mb-1">Assigned Tier</label>
-                        <select id="adminTier" class="w-full bg-gray-900 border border-pvp-red/40 rounded px-3 py-2 text-white focus:outline-none focus:border-pvp-red">
-                            <option value="HT1">HT1 (High Tier 1)</option>
-                            <option value="LT1">LT1 (Low Tier 1)</option>
-                            <option value="HT2">HT2 (High Tier 2)</option>
-                            <option value="LT2">LT2 (Low Tier 2)</option>
-                            <option value="HT3">HT3 (High Tier 3)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-gray-400 mb-1">Region Tag</label>
-                        <select id="adminRegion" class="w-full bg-gray-900 border border-pvp-red/40 rounded px-3 py-2 text-white focus:outline-none focus:border-pvp-red">
-                            <option value="IN">IN (India)</option>
-                            <option value="US">US (North America)</option>
-                            <option value="GB">GB (Europe)</option>
-                        </select>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-gray-400 mb-1">Competitive Points</label>
-                    <input type="number" id="adminPoints" required value="1200" class="w-full bg-gray-900 border border-pvp-red/40 rounded px-3 py-2 text-white focus:outline-none focus:border-pvp-red">
-                </div>
-                <div>
-                    <label class="block text-gray-400 mb-1">Primary Game Mode</label>
-                    <select id="adminMode" class="w-full bg-gray-900 border border-pvp-red/40 rounded px-3 py-2 text-white focus:outline-none focus:border-pvp-red">
-                        <option value="NethOP">NethOP</option>
-                        <option value="Pot">Pot PvP</option>
-                        <option value="UHC">UHC</option>
-                        <option value="Crystal">Crystal</option>
-                        <option value="Sword">Sword</option>
-                        <option value="Axe">Axe</option>
-                        <option value="Mace">Mace</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="w-full py-3 bg-pvp-red hover:bg-pvp-redGlow text-white font-bold rounded transition-all shadow-[0_0_15px_#ff003366] uppercase tracking-wider">
-                    <i class="fa-solid fa-plus"></i> Push Player To Leaderboard
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- NOTIFICATION TOAST FEEDBACK -->
-    <div id="toast" class="fixed bottom-6 right-6 z-50 hidden bg-black border-2 border-pvp-red text-white font-orbitron text-xs px-5 py-3 rounded-lg shadow-[0_0_20px_#ff003388] transition-all flex items-center gap-3">
-        <i class="fa-solid fa-circle-check text-pvp-red text-base"></i>
-        <span id="toastMessage">Action completed successfully!</span>
-    </div>
-
-
-    <!-- JAVASCRIPT APPLICATION CODE BASE -->
-    <script>
-        /* ==========================================
-           1. INITIAL STATE & DATA STORAGE
-           ========================================== */
-        const gameModes = [
-            { id: 'UHC', name: 'UHC PvP', icon: 'fa-apple-whole', desc: 'Golden Apples & Lava Play' },
-            { id: 'Pot', name: 'Node / Pot', icon: 'fa-flask', desc: 'Speed II & Health Potions' },
-            { id: 'NethOP', name: 'Netherite OP', icon: 'fa-shield', desc: 'Prot IV Netherite & Anchors' },
-            { id: 'SMP', name: 'Vanilla SMP', icon: 'fa-tree', desc: 'Standard Shield & Sword' },
-            { id: 'Sword', name: '1.8 Sword', icon: 'fa-khanda', desc: 'Classic Block Hitting' },
-            { id: 'Axe', name: 'Axe & Shield', icon: 'fa-axe', desc: 'Shield Disabling & Crits' },
-            { id: 'Mace', name: 'Heavy Mace', icon: 'fa-hammer', desc: '1.21 Heavy Slam Attacks' },
-            { id: 'Crystal', name: 'End Crystal', icon: 'fa-gem', desc: 'Fast Obsidian Placement' }
-        ];
-
-        let playersDatabase = [
-            { id: 1, username: "Mythic_IN", tier: "HT1", region: "IN", points: 2840, mode: "NethOP", skinUrl: "https://mc-heads.net/avatar/Mythic_IN" },
-            { id: 2, username: "ViperPvP", tier: "HT1", region: "IN", points: 2710, mode: "Pot", skinUrl: "https://mc-heads.net/avatar/ViperPvP" },
-            { id: 3, username: "AxeGod_99", tier: "LT1", region: "US", points: 2450, mode: "Axe", skinUrl: "https://mc-heads.net/avatar/AxeGod_99" },
-            { id: 4, username: "CrystalKing", tier: "HT2", region: "GB", points: 2200, mode: "Crystal", skinUrl: "https://mc-heads.net/avatar/CrystalKing" },
-            { id: 5, username: "DesiStriker", tier: "LT1", region: "IN", points: 2150, mode: "UHC", skinUrl: "https://mc-heads.net/avatar/DesiStriker" },
-            { id: 6, username: "MaceMaster", tier: "LT2", region: "IN", points: 1890, mode: "Mace", skinUrl: "https://mc-heads.net/avatar/MaceMaster" }
-        ];
-
-        let currentCarouselDeg = 0;
-        let selectedModeFilter = 'ALL';
-
-        /* ==========================================
-           2. INTRO ANIMATION & AUDIO SYNTHESIS
-           ========================================== */
-        window.addEventListener('load', () => {
-            // Dismiss Intro Overlay Smoothly
-            setTimeout(() => {
-                const overlay = document.getElementById('introOverlay');
-                overlay.style.opacity = '0';
-                setTimeout(() => overlay.style.visibility = 'hidden', 1000);
-            }, 1800);
-
-            // Initialize Background Embers & Three.js Skin Studio
-            initEmberCanvas();
-            init3DSkinStudio();
-            initCarousel();
-            renderLeaderboard();
-            initPhysicsBadges();
-            startLiveCounterTicks();
-        });
-
-        // Web Audio API Synthesizer for Audio Cues
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        function playClickSound(freq = 440, type = 'sine') {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = type;
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.08);
-        }
-
-        /* ==========================================
-           3. CANVAS RED EMBER PARTICLES (BACKGROUND)
-           ========================================== */
-        function initEmberCanvas() {
-            const canvas = document.getElementById('bgCanvas');
-            const ctx = canvas.getContext('2d');
-            let width = canvas.width = window.innerWidth;
-            let height = canvas.height = window.innerHeight;
-
-            window.addEventListener('resize', () => {
-                width = canvas.width = window.innerWidth;
-                height = canvas.height = window.innerHeight;
-            });
-
-            const embers = Array.from({ length: 65 }, () => ({
-                x: Math.random() * width,
-                y: Math.random() * height,
-                radius: Math.random() * 2 + 0.5,
-                speedY: Math.random() * 1.2 + 0.3,
-                speedX: (Math.random() - 0.5) * 0.5,
-                opacity: Math.random() * 0.8 + 0.2
-            }));
-
-            function animate() {
-                ctx.clearRect(0, 0, width, height);
-                embers.forEach(e => {
-                    e.y -= e.speedY;
-                    e.x += e.speedX;
-                    if (e.y < 0) e.y = height;
-                    if (e.x < 0) e.x = width;
-                    if (e.x > width) e.x = 0;
-
-                    ctx.beginPath();
-                    ctx.arc(e.x, e.y, e.radius, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(255, 0, 51, ${e.opacity})`;
-                    ctx.shadowBlur = 8;
-                    ctx.shadowColor = '#ff0033';
-                    ctx.fill();
-                });
-                requestAnimationFrame(animate);
-            }
-            animate();
-        }
-
-        /* ==========================================
-           4. THREE.JS 3D MINECRAFT SKIN STUDIO
-           ========================================== */
-        let skinMesh, skinRenderer, skinScene, skinCamera;
-
-        function init3DSkinStudio() {
-            const container = document.getElementById('skinCanvas').parentElement;
-            skinScene = new THREE.Scene();
-            
-            skinCamera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-            skinCamera.position.set(0, 0, 8);
-
-            skinRenderer = new THREE.WebGLRenderer({ canvas: document.getElementById('skinCanvas'), alpha: true, antialias: true });
-            skinRenderer.setSize(container.clientWidth, container.clientHeight);
-
-            // Lighting
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-            skinScene.add(ambientLight);
-
-            const dirLight = new THREE.DirectionalLight(0xff0033, 0.6);
-            dirLight.position.set(5, 5, 5);
-            skinScene.add(dirLight);
-
-            // Minecraft Player Block Model Box Composite
-            const geometry = new THREE.BoxGeometry(2, 3.2, 1);
-            const materials = [
-                new THREE.MeshStandardMaterial({ color: 0x220008 }),
-                new THREE.MeshStandardMaterial({ color: 0x220008 }),
-                new THREE.MeshStandardMaterial({ color: 0xff0033 }), // Head accent
-                new THREE.MeshStandardMaterial({ color: 0x0a0a0a }),
-                new THREE.MeshStandardMaterial({ color: 0x88001b }),
-                new THREE.MeshStandardMaterial({ color: 0x220008 })
-            ];
-
-            skinMesh = new THREE.Mesh(geometry, materials);
-            skinScene.add(skinMesh);
-
-            // Drag Rotation Interactions
-            let isDragging = false;
-            let previousMouseX = 0;
-
-            const canvasEl = document.getElementById('skinCanvas');
-            canvasEl.addEventListener('mousedown', (e) => { isDragging = true; previousMouseX = e.clientX; });
-            window.addEventListener('mouseup', () => isDragging = false);
-            window.addEventListener('mousemove', (e) => {
-                if (!isDragging) return;
-                const deltaX = e.clientX - previousMouseX;
-                skinMesh.rotation.y += deltaX * 0.01;
-                previousMouseX = e.clientX;
-            });
-
-            function render() {
-                requestAnimationFrame(render);
-                if (!isDragging) skinMesh.rotation.y += 0.005; // Idle Auto-Rotation
-                skinRenderer.render(skinScene, skinCamera);
-            }
-            render();
-        }
-
-        function downloadSkinTexture() {
-            playClickSound(600);
-            showToast("Downloading Skin PNG File...");
-        }
-
-        function handleSkinUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                playClickSound(800);
-                showToast("Custom Skin Texture Applied!");
-            }
-        }
-
-        /* ==========================================
-           5. 360-DEGREE GAME MODES CAROUSEL
-           ========================================== */
-        function initCarousel() {
-            const spinner = document.getElementById('carouselSpinner');
-            spinner.innerHTML = '';
-            const total = gameModes.length;
-            const angleStep = 360 / total;
-
-            gameModes.forEach((mode, idx) => {
-                const angle = idx * angleStep;
-                const item = document.createElement('div');
-                item.className = 'carousel-item cyber-card rounded-xl p-4 flex flex-col items-center justify-center text-center cursor-pointer border border-pvp-red/30 bg-black/90 hover:border-pvp-red';
-                item.style.transform = `rotateY(${angle}deg) translateZ(260px)`;
-                item.onclick = () => selectModeFromCarousel(mode.id);
-
-                item.innerHTML = `
-                    <div class="w-12 h-12 rounded-full bg-pvp-red/20 border border-pvp-red flex items-center justify-center text-pvp-red text-2xl mb-2 shadow-[0_0_10px_#ff003344]">
-                        <i class="fa-solid ${mode.icon}"></i>
-                    </div>
-                    <div class="font-orbitron font-bold text-sm text-white">${mode.name}</div>
-                    <p class="text-[10px] text-gray-400 font-rajdhani mt-1">${mode.desc}</p>
-                `;
-                spinner.appendChild(item);
-            });
-
-            // Drag to Rotate Carousel
-            let startX = 0;
-            let isDragging = false;
-            const container = document.getElementById('carouselContainer');
-
-            container.addEventListener('mousedown', (e) => { isDragging = true; startX = e.clientX; });
-            window.addEventListener('mouseup', () => isDragging = false);
-            window.addEventListener('mousemove', (e) => {
-                if (!isDragging) return;
-                const deltaX = e.clientX - startX;
-                if (Math.abs(deltaX) > 10) {
-                    rotateCarousel(deltaX > 0 ? -1 : 1);
-                    startX = e.clientX;
-                }
-            });
-        }
-
-        function rotateCarousel(direction) {
-            playClickSound(300 + Math.random() * 200);
-            currentCarouselDeg += direction * (360 / gameModes.length);
-            document.getElementById('carouselSpinner').style.transform = `rotateY(${currentCarouselDeg}deg)`;
-        }
-
-        function selectModeFromCarousel(modeId) {
-            playClickSound(700);
-            selectedModeFilter = modeId;
-            document.getElementById('activeModeLabel').innerText = modeId;
-            renderLeaderboard();
-            showToast(`Filtered Leaderboard by ${modeId}`);
-        }
-
-        /* ==========================================
-           6. GLOBAL TIER LEADERBOARD RENDERER
-           ========================================== */
-        function renderLeaderboard() {
-            const grid = document.getElementById('leaderboardGrid');
-            const search = document.getElementById('leaderboardSearch').value.toLowerCase();
-            const tier = document.getElementById('tierFilter').value;
-
-            const filtered = playersDatabase.filter(p => {
-                const matchSearch = p.username.toLowerCase().includes(search);
-                const matchTier = tier === 'ALL' || p.tier === tier;
-                const matchMode = selectedModeFilter === 'ALL' || p.mode === selectedModeFilter;
-                return matchSearch && matchTier && matchMode;
-            });
-
-            grid.innerHTML = '';
-            if (filtered.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-500 font-orbitron text-sm">No tier test players found matching criteria.</div>`;
-                return;
-            }
-
-            filtered.forEach(player => {
-                const card = document.createElement('div');
-                card.className = 'cyber-card rounded-xl p-5 border border-pvp-red/30 bg-black/80 cursor-pointer hover:border-pvp-red flex flex-col justify-between space-y-4';
-                card.onclick = () => openPlayerModal(player.id);
-
-                card.innerHTML = `
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <img src="${player.skinUrl}" alt="${player.username}" class="w-10 h-10 rounded bg-gray-900 border border-pvp-red/40 object-contain">
-                            <div>
-                                <h4 class="font-orbitron font-bold text-base text-white hover:text-pvp-red transition-colors">${player.username}</h4>
-                                <span class="text-[10px] font-orbitron px-1.5 py-0.5 rounded bg-gray-900 text-gray-400 border border-gray-800">Region: ${player.region}</span>
-                            </div>
-                        </div>
-                        <span class="tier-badge tier-${player.tier}">${player.tier}</span>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2 text-xs font-orbitron border-t border-b border-pvp-red/20 py-3">
-                        <div>
-                            <span class="text-gray-500 block text-[10px]">TOTAL POINTS</span>
-                            <span class="text-white font-bold text-sm">${player.points}</span>
-                        </div>
-                        <div>
-                            <span class="text-gray-500 block text-[10px]">MAIN MODE</span>
-                            <span class="text-pvp-red font-bold text-sm">${player.mode}</span>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-between items-center text-[10px] font-orbitron text-gray-400">
-                        <span><i class="fa-solid fa-certificate text-pvp-red"></i> Verified Tester</span>
-                        <span class="text-pvp-red">View Profile <i class="fa-solid fa-arrow-right"></i></span>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        /* ==========================================
-           7. DRAG & FLICK PHYSICS ENGINE
-           ========================================== */
-        function initPhysicsBadges() {
-            const badges = document.querySelectorAll('.draggable-badge');
-            badges.forEach(badge => {
-                let isDragging = false;
-                let startX, startY;
-                let currentX = 0, currentY = 0;
-
-                badge.addEventListener('mousedown', (e) => {
-                    isDragging = true;
-                    startX = e.clientX - currentX;
-                    startY = e.clientY - currentY;
-                    badge.style.transition = 'none';
-                });
-
-                window.addEventListener('mousemove', (e) => {
-                    if (!isDragging) return;
-                    currentX = e.clientX - startX;
-                    currentY = e.clientY - startY;
-                    badge.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${currentX * 0.1}deg)`;
-                });
-
-                window.addEventListener('mouseup', () => {
-                    if (!isDragging) return;
-                    isDragging = false;
-                    // Flick Spring Return Mechanics
-                    badge.style.transition = 'transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                    currentX = 0;
-                    currentY = 0;
-                    badge.style.transform = `translate(0px, 0px) rotate(0deg)`;
-                    playClickSound(500, 'triangle');
-                });
-            });
-        }
-
-        /* ==========================================
-           8. NAVIGATION & MODALS LOGIC
-           ========================================== */
-        function switchTab(tabId) {
-            playClickSound(450);
-            document.querySelectorAll('.nav-tab').forEach(tab => {
-                tab.classList.remove('active');
-                tab.classList.add('text-gray-400');
-            });
-            document.querySelectorAll('.tab-content').forEach(view => view.classList.add('hidden'));
-
-            const activeTab = document.getElementById(`tab-${tabId}`);
-            if (activeTab) {
-                activeTab.classList.add('active');
-                activeTab.classList.remove('text-gray-400');
-            }
-
-            const activeView = document.getElementById(`view-${tabId}`);
-            if (activeView) activeView.classList.remove('hidden');
-        }
-
-        function openPlayerModal(playerId) {
-            playClickSound(650);
-            const player = playersDatabase.find(p => p.id === playerId);
-            if (!player) return;
-
-            document.getElementById('modalAvatar').src = player.skinUrl;
-            document.getElementById('modalUsername').innerText = player.username;
-            document.getElementById('modalRegion').innerText = player.region;
-            document.getElementById('modalTier').innerText = `Tier Rank: ${player.tier}`;
-            document.getElementById('modalPoints').innerText = player.points;
-            document.getElementById('modalFavMode').innerText = player.mode;
-
-            document.getElementById('playerModal').classList.remove('hidden');
-        }
-
-        function closePlayerModal() {
-            document.getElementById('playerModal').classList.add('hidden');
-        }
-
-        function openAdminModal() {
-            playClickSound(550);
-            document.getElementById('adminModal').classList.remove('hidden');
-        }
-
-        function closeAdminModal() {
-            document.getElementById('adminModal').classList.add('hidden');
-        }
-
-        function handleAdminAddPlayer(e) {
-            e.preventDefault();
-            playClickSound(900);
-
-            const username = document.getElementById('adminUsername').value.trim();
-            const tier = document.getElementById('adminTier').value;
-            const region = document.getElementById('adminRegion').value;
-            const points = parseInt(document.getElementById('adminPoints').value);
-            const mode = document.getElementById('adminMode').value;
-
-            const newPlayer = {
-                id: Date.now(),
-                username: username,
-                tier: tier,
-                region: region,
-                points: points,
-                mode: mode,
-                skinUrl: `https://mc-heads.net/avatar/${username}`
-            };
-
-            playersDatabase.unshift(newPlayer);
-            renderLeaderboard();
-            closeAdminModal();
-            showToast(`Player ${username} added to global leaderboard!`);
-            document.getElementById('adminForm').reset();
-        }
-
-        /* ==========================================
-           9. UTILITIES & TICKING STATS
-           ========================================== */
-        function copyToClipboard(text, message) {
-            playClickSound(750);
-            document.execCommand('copy');
-            showToast(message);
-        }
-
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toastMessage').innerText = msg;
-            toast.classList.remove('hidden');
-            setTimeout(() => toast.classList.add('hidden'), 3000);
-        }
-
-        function startLiveCounterTicks() {
-            setInterval(() => {
-                const el = document.getElementById('statOnline');
-                let val = parseInt(el.innerText.replace(',', ''));
-                val += Math.floor(Math.random() * 5) - 2;
-                el.innerText = val.toLocaleString();
-            }, 3500);
-        }
-    </script>
-</body>
-</html>
+    <p style="color:#999;font-size:13px">Local demo portal for this single-page prototype.</p>
+    <form id="pvpLoginForm" onsubmit="return pvpHandleLogin(event)" style="display:grid;gap:12px">
+      <label>Username<input id="pvpLoginName" maxlength="24" required autocomplete="username" placeholder="Minecraft username"></label>
+      <label>Password<input id="pvpLoginPassword" type="password" required autocomplete="current-password" placeholder="Demo password"></label>
+      <button type="submit">Sign in</button>
+      <p id="pvpLoginMessage" aria-live="polite" style="margin:0;color:#999;font-size:13px"></p>
+    </form>
+  </div>
+</div>
+<script id="pvpNeutralAdminEnhancements">
+(function () {
+  const $ = (id) => document.getElementById(id);
+  window.pvpOpenLogin = function(){ const m=$('pvpLoginModal'); if(m){m.style.display='flex';$('pvpLoginMessage').textContent='';setTimeout(()=>$('pvpLoginName').focus(),30);} };
+  window.pvpCloseLogin = function(){ const m=$('pvpLoginModal'); if(m)m.style.display='none'; };
+  window.pvpHandleLogin = function(e){
+    e.preventDefault();
+    const name=($('pvpLoginName').value||'').trim();
+    const password=$('pvpLoginPassword').value||'';
+    if(!/^[A-Za-z0-9_]{3,24}$/.test(name)){ $('pvpLoginMessage').textContent='Use a 3–24 character Minecraft username.'; return false; }
+    // Front-end demo only: never use this for real account authentication.
+    if(password.length<1){ $('pvpLoginMessage').textContent='Enter a password.'; return false; }
+    try { localStorage.setItem('pvpIndiaDemoUser', JSON.stringify({name:name, signedInAt:Date.now()})); } catch(_){}
+    $('pvpLoginMessage').textContent='Signed in locally as '+name+'. This demo does not verify a real account.';
+    setTimeout(pvpCloseLogin,1100);
+    const trigger=$('pvpLoginTrigger'); if(trigger)trigger.textContent=name;
+    return false;
+  };
+  const adminAnchor = document.querySelector('#adminModal .modal-content, #adminModal .modal-body, #adminModal .admin-content, #adminModal');
+  if(adminAnchor && !$('pvpAdminPlayersPanel')){
+    const panel=document.createElement('section'); panel.id='pvpAdminPlayersPanel'; panel.className='pvp-neutral-panel';
+    panel.style.cssText='margin-top:18px;padding:16px;color:#ccc';
+    panel.innerHTML='<h3 style="margin:0 0 12px;color:#eee">OP Admin · Player Manager</h3><form id="pvpAdminAddForm" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px;margin-bottom:14px"><input id="pvpAdminNewName" maxlength="24" placeholder="Player username" required><input id="pvpAdminNewTier" maxlength="30" placeholder="Tier (e.g. HT1)"><input id="pvpAdminNewPoints" type="number" min="0" max="1000000" placeholder="Points" value="0"><button type="submit">Add player</button></form><div id="pvpAdminPlayerList"></div><p style="font-size:12px;color:#888;margin:12px 0 0">Local browser storage only. Client-side admin controls are not secure for production.</p>';
+    adminAnchor.appendChild(panel);
+    const form=$('pvpAdminAddForm');
+    form.addEventListener('submit',function(e){
+      e.preventDefault();
+      const name=$('pvpAdminNewName').value.trim();
+      const tier=$('pvpAdminNewTier').value.trim()||'Unranked';
+      const points=Number($('pvpAdminNewPoints').value||0);
+      if(!/^[A-Za-z0-9_]{3,24}$/.test(name)||!Number.isFinite(points)||points<0){alert('Enter a valid username and non-negative points.');return;}
+      const db=pvpGetPlayers();
+      if(db.some(p=>String(p.username||p.name||'').toLowerCase()===name.toLowerCase())){alert('That player already exists.');return;}
+      db.push({username:name,name:name,tier:tier,points:points});
+      pvpSavePlayers(db); form.reset(); $('pvpAdminNewPoints').value='0'; pvpRenderAdminPlayers();
+      if(typeof window.renderLeaderboard==='function')window.renderLeaderboard();
+      else if(typeof window.renderPlayers==='function')window.renderPlayers();
+    });
+    pvpRenderAdminPlayers();
+  }
+  function pvpGetPlayers(){
+    try { const saved=localStorage.getItem('pvpIndiaPlayers'); if(saved)return JSON.parse(saved); } catch(_){}
+    if(Array.isArray(window.playersDatabase))return window.playersDatabase;
+    return [];
+  }
+  function pvpSavePlayers(db){
+    try { localStorage.setItem('pvpIndiaPlayers',JSON.stringify(db)); } catch(_){}
+    if(Array.isArray(window.playersDatabase)){ window.playersDatabase.splice(0,window.playersDatabase.length,...db); }
+  }
+  window.pvpRenderAdminPlayers=function(){
+    const list=$('pvpAdminPlayerList'); if(!list)return;
+    const db=pvpGetPlayers();
+    list.innerHTML='';
+    if(!db.length){list.innerHTML='<p style="color:#888">No players found in the local database yet.</p>';return;}
+    db.forEach((p,i)=>{
+      const row=document.createElement('div');row.className='pvp-admin-row';
+      const info=document.createElement('div');
+      const name=String(p.username||p.name||p.player||'Unknown');
+      info.innerHTML='<strong style="color:#ddd"></strong><div style="color:#888;font-size:12px"></div>';
+      info.firstChild.textContent=name;
+      info.lastChild.textContent=String(p.tier||p.rank||'Unranked')+' · '+String(p.points||0)+' points';
+      const del=document.createElement('button');del.type='button';del.textContent='Remove';
+      del.addEventListener('click',function(){
+        if(!confirm('Remove '+name+' from the local player list?'))return;
+        const next=pvpGetPlayers();next.splice(i,1);pvpSavePlayers(next);pvpRenderAdminPlayers();
+        if(typeof window.renderLeaderboard==='function')window.renderLeaderboard();
+        else if(typeof window.renderPlayers==='function')window.renderPlayers();
+      });
+      row.append(info,del);list.appendChild(row);
+    });
+  };
+  // Smooth pointer-drag rotation for the existing mode carousel.
+  function enableDragCarousel(){
+    const el=document.querySelector('#carousel, .carousel, .gamemode-carousel, #gameModeCarousel, .mode-carousel');
+    if(!el||el.dataset.pvpDragEnabled)return;
+    el.dataset.pvpDragEnabled='1'; el.style.cursor='grab'; el.style.touchAction='pan-y';
+    let down=false,startX=0,lastX=0,rot=0;
+    el.addEventListener('pointerdown',e=>{down=true;startX=e.clientX;lastX=e.clientX;el.setPointerCapture&&el.setPointerCapture(e.pointerId);el.style.cursor='grabbing';});
+    el.addEventListener('pointermove',e=>{
+      if(!down)return;
+      const dx=e.clientX-lastX;lastX=e.clientX;rot+=dx*.65;
+      const items=el.querySelectorAll('.carousel-item, .mode-card, .gamemode-card, [data-mode-card]');
+      if(items.length){items.forEach((item,i)=>{item.style.transition='transform .08s linear';item.style.transform='rotateY('+(i*360/items.length+rot)+'deg) translateZ(180px)';});}
+      else {el.style.transform='perspective(900px) rotateY('+rot+'deg)';}
+    });
+    function end(){down=false;el.style.cursor='grab';}
+    el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);el.addEventListener('lostpointercapture',end);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',enableDragCarousel);else enableDragCarousel();
+  // Reuse the existing Three.js scene if present; otherwise create a standalone voxel character canvas.
+  function addMinecraftCharacter(){
+    const candidates=['home','hero','heroSection','hero-section','home-section'];
+    let host=null;
+    for(const id of candidates){const n=$(id);if(n){host=n;break;}}
+    if(!host)host=document.querySelector('main')||document.body;
+    if($('pvpMinecraftCharacter'))return;
+    const wrap=document.createElement('div');wrap.style.cssText='max-width:520px;margin:22px auto;text-align:center';
+    const canvas=document.createElement('canvas');canvas.id='pvpMinecraftCharacter';canvas.width=800;canvas.height=600;canvas.setAttribute('aria-label','Interactive 3D-style Minecraft character; drag to rotate');
+    wrap.appendChild(canvas);
+    const caption=document.createElement('div');caption.textContent='3D MINECRAFT PLAYER · DRAG TO ROTATE';caption.style.cssText='font-size:11px;letter-spacing:2px;color:#888;margin-top:4px';wrap.appendChild(caption);
+    host.appendChild(wrap);
+    const ctx=canvas.getContext('2d');let angle=-.35,drag=false,last=0;
+    function cube(x,y,w,h,depth,front,side,top){
+      ctx.fillStyle=top;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+depth,y-depth*.55);ctx.lineTo(x+w+depth,y-depth*.55);ctx.lineTo(x+w,y);ctx.closePath();ctx.fill();
+      ctx.fillStyle=side;ctx.beginPath();ctx.moveTo(x+w,y);ctx.lineTo(x+w+depth,y-depth*.55);ctx.lineTo(x+w+depth,y+h-depth*.55);ctx.lineTo(x+w,y+h);ctx.closePath();ctx.fill();
+      ctx.fillStyle=front;ctx.fillRect(x,y,w,h);
+    }
+    function draw(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      const g=ctx.createRadialGradient(400,280,20,400,280,290);g.addColorStop(0,'#353535');g.addColorStop(1,'#09090900');ctx.fillStyle=g;ctx.fillRect(0,0,800,600);
+      const s=Math.sin(angle),c=Math.cos(angle),shift=s*24,shade=Math.max(.45,(c+1)/2);
+      ctx.save();ctx.translate(400,110);
+      // Legs
+      cube(-48+shift*.25,285,42,125,20,'#333','#242424','#494949');
+      cube(8-shift*.25,285,42,125,20,'#444','#292929','#555');
+      // Body and arms
+      cube(-63,155,126,132,28,'#565656','#353535','#737373');
+      cube(-100+shift*.2,165,32,115,17,'#777','#444','#8b8b8b');
+      cube(68-shift*.2,165,32,115,17,'#696969','#3b3b3b','#818181');
+      // Head
+      cube(-52+shift*.3,45,104,102,22,'#b0b0b0','#777','#d0d0d0');
+      ctx.fillStyle='#242424';ctx.fillRect(-32+shift*.3,83,15,13);ctx.fillRect(17+shift*.3,83,15,13);
+      ctx.fillStyle='#555';ctx.fillRect(-10+shift*.3,111,22,8);
+      // Armor accents
+      ctx.strokeStyle='#999';ctx.lineWidth=4;ctx.strokeRect(-62,155,124,132);
+      ctx.strokeStyle='#777';ctx.strokeRect(-51+shift*.3,44,102,102);
+      ctx.restore();
+      ctx.fillStyle='#888';ctx.font='14px monospace';ctx.textAlign='center';ctx.fillText('PVP INDIA',400,565);
+      requestAnimationFrame(draw);
+    }
+    let animating=true;
+    // Draw at a gentle idle angle; the model itself rotates on drag.
+    function frame(){if(!animating)return;drawOnce();requestAnimationFrame(frame);}
+    function drawOnce(){
+      ctx.clearRect(0,0,800,600);
+      const g=ctx.createRadialGradient(400,280,20,400,280,290);g.addColorStop(0,'#353535');g.addColorStop(1,'#09090900');ctx.fillStyle=g;ctx.fillRect(0,0,800,600);
+      const shift=Math.sin(angle)*24;
+      ctx.save();ctx.translate(400,100);
+      cube(-48+shift*.25,285,42,125,20,'#333','#242424','#494949');cube(8-shift*.25,285,42,125,20,'#444','#292929','#555');
+      cube(-63,155,126,132,28,'#565656','#353535','#737373');cube(-100+shift*.2,165,32,115,17,'#777','#444','#8b8b8b');cube(68-shift*.2,165,32,115,17,'#696969','#3b3b3b','#818181');
+      cube(-52+shift*.3,45,104,102,22,'#b0b0b0','#777','#d0d0d0');
+      ctx.fillStyle='#242424';ctx.fillRect(-32+shift*.3,83,15,13);ctx.fillRect(17+shift*.3,83,15,13);ctx.fillStyle='#555';ctx.fillRect(-10+shift*.3,111,22,8);
+      ctx.strokeStyle='#999';ctx.lineWidth=4;ctx.strokeRect(-62,155,124,132);ctx.restore();
+      ctx.fillStyle='#888';ctx.font='14px monospace';ctx.textAlign='center';ctx.fillText('PVP INDIA',400,565);
+    }
+    canvas.addEventListener('pointerdown',e=>{drag=true;last=e.clientX;canvas.setPointerCapture(e.pointerId);});
+    canvas.addEventListener('pointermove',e=>{if(!drag)return;angle+=(e.clientX-last)*.012;last=e.clientX;drawOnce();});
+    canvas.addEventListener('pointerup',()=>drag=false);canvas.addEventListener('pointercancel',()=>drag=false);
+    frame();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',addMinecraftCharacter);else addMinecraftCharacter();
+})();
+</script>
+"""
+html = html.replace("</body>", addon + "\n</body>", 1) if "</body>" in html else html + addon
+
+out = Path("/mnt/data/pvp_india_neutral_updated.html")
+out.write_text(html, encoding="utf-8")
+print(f"Created updated website: {out}\nSize: {out.stat().st_size:,} bytes\nBased on: {src.name}")
