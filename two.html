@@ -1,0 +1,83 @@
+from pathlib import Path
+
+source = Path("/mnt/data/Pasted text(20261030-161848).txt")
+html = source.read_text(encoding="utf-8")
+
+# Repair the image URL incorrectly loaded as JavaScript and remove the stray Python line.
+html = html.replace(
+    '<script src="https://cdn.discordapp.com/icons/896903597709754398/eb1a1048d3f7fb738dd1849163025c0b.png?size=256"></script>',
+    '<script src="https://cdn.jsdelivr.net/npm/skinview3d@3.2.0/bundles/skinview3d.bundle.js"></script>'
+)
+html = html.replace('\nout.write_text(html, encoding="utf-8")', "")
+html = html.replace("\nout.write_text(html, encoding='utf-8')", "")
+
+polish = r"""
+/* FINAL POLISH — original warm gold / black / brown palette retained */
+:root { --motion: cubic-bezier(.2,.75,.25,1); }
+html { scroll-behavior:smooth; scroll-padding-top:105px; }
+body { -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; }
+a,button,input,select,textarea { -webkit-tap-highlight-color:transparent; }
+button,a,.btn,.copy,.signin-btn,.mode,.weapon-card,.feature,.stat,
+.match-card,.poster-card,.modal-close,.discord,.youtube-link {
+  transition: color .24s var(--motion), background-color .24s var(--motion),
+    border-color .24s var(--motion), box-shadow .3s var(--motion),
+    transform .3s var(--motion), filter .3s var(--motion);
+}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,
+textarea:focus-visible,[role="button"]:focus-visible {
+  outline:2px solid var(--gold2); outline-offset:4px;
+}
+.btn,.signin-btn,.copy { position:relative; isolation:isolate; overflow:hidden; }
+.btn::after,.signin-btn::after,.copy::after {
+  content:""; position:absolute; z-index:-1; top:-60%; bottom:-60%; left:-45%;
+  width:34%; pointer-events:none;
+  background:linear-gradient(90deg,transparent,#fff9d888,transparent);
+  transform:translateX(-220%) rotate(18deg);
+  transition:transform .65s var(--motion);
+}
+.btn:hover::after,.signin-btn:hover::after,.copy:hover::after {
+  transform:translateX(570%) rotate(18deg);
+}
+.btn:hover,.signin-btn:hover {
+  transform:translateY(-3px); filter:brightness(1.07);
+  box-shadow:0 8px 0 #5b3919,0 13px 28px #0008,0 0 24px #e8b64c28;
+}
+.btn:active,.signin-btn:active,.copy:active { transform:translateY(1px) scale(.985); }
+.btn.secondary:hover { color:#fff0c3; border-color:var(--gold2); background:#302315; }
+.copy:hover { transform:translateY(-2px); filter:brightness(1.08); box-shadow:0 7px 18px #0006; }
+.nav button:hover,.mode:hover { transform:translateY(-2px); }
+.weapon-card:hover,.feature:hover,.stat:hover,.match-card:hover,.poster-card:hover {
+  transform:translateY(-5px); border-color:var(--gold);
+  box-shadow:0 15px 34px #0007,0 0 20px #e8b64c18;
+}
+.weapon-card:active,.mode:active { transform:scale(.98); }
+input:focus,select:focus,textarea:focus {
+  border-color:var(--gold2)!important; box-shadow:0 0 0 3px #e8b64c24!important;
+}
+.player-open { cursor:pointer; transition:color .2s ease; }
+.player-open:hover { color:var(--gold2); }
+.block-card { transition:transform .55s var(--motion),box-shadow .55s var(--motion); }
+.block-card:hover { transform:rotate(-2deg) translateY(-5px); box-shadow:18px 27px 0 #080706,0 0 75px #dca33b38,inset 0 0 0 5px #17100b; }
+.modal-card { will-change:transform; }
+::selection { background:#e8b64c66; color:#fff5df; }
+@media (hover:hover) and (pointer:fine) {
+  .brand-mark { transition:transform .35s var(--motion),filter .35s; }
+  .brand:hover .brand-mark { transform:rotate(3deg) scale(1.06); filter:brightness(1.12); }
+}
+@media (prefers-reduced-motion:reduce) {
+  *,*::before,*::after { scroll-behavior:auto!important; animation-duration:.01ms!important;
+    animation-iteration-count:1!important; transition-duration:.01ms!important; }
+}
+"""
+if "</style>" in html:
+    html = html.replace("</style>", polish + "\n</style>", 1)
+
+# Ensure the icon link is a favicon, not a script.
+html = html.replace(
+    '<script src="https://cdn.discordapp.com/icons/896903597709754398/eb1a1048d3f7fb738dd1849163025c0b.png?size=256"></script>',
+    '<link rel="icon" href="https://cdn.discordapp.com/icons/896903597709754398/eb1a1048d3f7fb738dd1849163025c0b.png?size=256">'
+)
+
+out = Path("/mnt/data/pvp-india-refined.html")
+out.write_text(html, encoding="utf-8")
+print(f"Created {out.name} — {out.stat().st_size:,} bytes")
