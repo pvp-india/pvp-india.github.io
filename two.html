@@ -1,83 +1,469 @@
-from pathlib import Path
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PvP India - Minecraft Tiers</title>
+<link rel="icon" href="tier.png">
+<style>
+:root {
+  --bg:#100d0b;
+  --panel:#1b1714;
+  --panel2:#241d17;
+  --gold:#e8b64c;
+  --gold2:#ffd879;
+  --text:#fff5df;
+  --muted:#b5a58e;
+  --line:#49351d;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:radial-gradient(ellipse at 50% -20%,#503719,#21170f 32%,var(--bg) 70%);
+  color:var(--text);
+  font-family:Inter,Arial,sans-serif;
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{color:inherit;text-decoration:none}
+.topbar{
+  position:sticky;top:0;z-index:10;
+  min-height:80px;padding:14px 5%;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:20px;flex-wrap:wrap;
+  background:#0b0908ed;
+  border-bottom:1px solid #6e4d22;
+  backdrop-filter:blur(14px);
+}
+.brand{display:flex;align-items:center;gap:12px;font-weight:1000;letter-spacing:2px}
+.logo{
+  width:48px;height:48px;display:grid;place-items:center;
+  background:linear-gradient(145deg,#f7d16e,#9b5d1d);
+  border:3px solid #6f491b;color:#160f08;font-size:24px;
+}
+.brand small{display:block;color:#d3a64e;font-size:9px;letter-spacing:3px}
+.nav{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.nav button{
+  background:transparent;border:1px solid transparent;
+  color:#c9b99e;padding:12px 15px;font-weight:900;
+  transition:.25s;border-radius:5px;
+}
+.nav button:hover,.nav button.active{
+  background:#2b2115;color:var(--gold2);
+  border-color:#674a24;transform:translateY(-2px);
+}
+.signin{background:linear-gradient(#f0c45f,#b87825)!important;color:#1b1006!important}
+.page{display:none;animation:appear .35s ease}
+.page.active{display:block}
+@keyframes appear{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:none}
+}
+.hero{
+  min-height:540px;padding:75px 8%;
+  display:grid;grid-template-columns:1.2fr .8fr;
+  align-items:center;gap:35px;overflow:hidden;
+  border-bottom:1px solid #5c421f;
+  background:
+  linear-gradient(90deg,#0c0a09f5,#140f0be0 55%,#140d0866),
+  repeating-linear-gradient(0deg,transparent 0 47px,#e7b14412 48px 50px),
+  repeating-linear-gradient(90deg,#201914 0 47px,#3c2a18 48px 50px);
+}
+.eyebrow,.kicker{
+  color:var(--gold2);font-size:11px;
+  letter-spacing:3px;font-weight:1000;
+}
+.eyebrow{border:1px solid #76501f;padding:10px;display:inline-block}
+h1{font-size:clamp(45px,7vw,85px);line-height:.95;margin:25px 0;text-shadow:5px 5px #392516}
+h1 span{color:var(--gold2)}
+.hero p{max-width:530px;color:#cbbba3;line-height:1.8}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.btn{
+  border:1px solid #9e702e;
+  background:linear-gradient(180deg,#f0c45f,#b87825);
+  color:#1b1006;font-weight:1000;
+  padding:14px 20px;letter-spacing:1px;
+  box-shadow:0 5px 0 #5b3919;
+  transition:transform .25s,box-shadow .25s,filter .25s;
+}
+.btn:hover{transform:translateY(-4px);box-shadow:0 9px 0 #5b3919,0 12px 25px #0008;filter:brightness(1.1)}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 #5b3919}
+.btn.secondary{background:#211a14;color:#f2d28b;border-color:#5e472b}
+.hero-art{
+  min-height:300px;display:grid;place-items:center;
+}
+.block-card{
+  width:min(320px,90%);aspect-ratio:1;
+  display:grid;place-items:center;
+  background:linear-gradient(135deg,#473023,#16120f 40%,#302015);
+  border:5px solid #715020;
+  box-shadow:18px 22px 0 #080706,0 0 60px #dca33b26;
+  transform:rotate(-5deg);
+  animation:float 4s ease-in-out infinite;
+}
+.block-card span{font-size:130px;filter:drop-shadow(8px 10px #080706)}
+@keyframes float{50%{transform:rotate(-2deg) translateY(-12px)}}
+.section{padding:60px 7%}
+.section-head{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:25px}
+h2{font-size:clamp(26px,4vw,42px);margin:10px 0;text-transform:uppercase}
+.section-head p{color:var(--muted);font-size:13px}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.stat,.feature,.weapon-card{
+  background:linear-gradient(145deg,#292016,#17120e);
+  border:1px solid #5c4221;padding:24px;
+}
+.stat strong{display:block;font-size:34px;color:#f1c766}
+.stat span{font-size:10px;color:#b9a88e;letter-spacing:2px}
+.feature-grid,.weapon-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.feature h3,.weapon-card b{color:#f1ce7a;text-transform:uppercase}
+.feature p{color:#b8a990;font-size:13px;line-height:1.7}
+.weapon-card{
+  color:var(--text);min-height:190px;
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:12px;
+  transition:.3s;position:relative;overflow:hidden;
+}
+.weapon-card:hover{
+  transform:translateY(-8px) scale(1.02);
+  border-color:var(--gold2);
+  box-shadow:0 15px 35px #0008,0 0 25px #e8b64c22;
+}
+.weapon-icon{font-size:55px;transition:.3s}
+.weapon-card:hover .weapon-icon{transform:scale(1.2) rotate(-10deg)}
+.weapon-card small{color:var(--muted)}
+.list-head{
+  padding:45px 6%;background:#080706;
+  border-bottom:1px solid #49351d;
+}
+.list-head p{color:#aaa;max-width:600px;line-height:1.7}
+.controls{
+  padding:20px 5%;display:flex;gap:8px;flex-wrap:wrap;
+  background:#080808;border-bottom:1px solid #292929;
+}
+.search,.field{
+  background:#111;color:white;border:1px solid #49351d;
+  padding:13px 15px;outline:none;
+}
+.search{flex:1;min-width:200px}
+.search:focus,.field:focus{border-color:var(--gold2);box-shadow:0 0 0 3px #e8b64c22}
+.mode{
+  background:#111;border:1px solid #333;color:#bbb;
+  padding:11px 13px;font-size:11px;font-weight:1000;
+  transition:.2s;
+}
+.mode:hover,.mode.active{background:#e5e5e5;color:#080808}
+.table-wrap{padding:25px 4%;overflow-x:auto;background:#050505}
+table{width:100%;min-width:850px;border-collapse:collapse;background:#090909}
+th,td{padding:15px;text-align:left;border-bottom:1px solid #292929}
+th{background:#171717;color:#f0f0f0;font-size:10px;letter-spacing:1px}
+td{font-size:13px;color:#ddd}
+tbody tr{transition:.2s}
+tbody tr:hover{background:#201a13}
+.tier{display:inline-block;padding:6px 9px;background:#171717;border:1px solid #555;font-weight:900}
+.ht{color:#fff;border-color:#aaa}
+.lt{color:#bbb}
+.player{display:flex;align-items:center;gap:10px;font-weight:900}
+.head-icon{width:34px;height:34px;image-rendering:pixelated}
+.points{color:#f2c766;font-weight:1000}
+.tournament-tools{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.bracket{display:flex;gap:20px;overflow-x:auto;padding:15px 0}
+.bracket-round{min-width:200px;display:flex;flex-direction:column;gap:15px}
+.bracket-round h3{color:var(--gold2);font-size:12px;text-align:center}
+.match-card{padding:12px;background:#211910;border:1px solid #654821}
+.match-team{padding:9px;border-bottom:1px solid #49351d;color:#e9d9b7}
+.entry-panel,.apply-form{
+  padding:25px;background:#1b1611;border:1px solid #5c4221;
+}
+.entry-panel h3{color:var(--gold2)}
+.entry-rows{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.entry-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+.entry-row input{min-width:0;width:100%;padding:10px;background:#100d0b;border:1px solid #49351d;color:white}
+.apply-form{max-width:650px;display:grid;gap:16px}
+.apply-form label{display:grid;gap:8px;color:var(--gold2);font-size:12px;font-weight:900}
+.apply-form textarea{resize:vertical}
+footer{
+  padding:28px 6%;display:flex;justify-content:space-between;
+  flex-wrap:wrap;gap:15px;background:#090807;
+  border-top:1px solid #4a351d;color:#8f8068;font-size:11px;
+}
+.toast{
+  position:fixed;bottom:25px;left:50%;
+  transform:translate(-50%,20px);opacity:0;
+  background:var(--gold);color:#1b1106;
+  padding:13px 20px;font-weight:1000;
+  transition:.25s;pointer-events:none;z-index:30;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:800px){
+  .hero{grid-template-columns:1fr;padding:50px 7%}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .feature-grid,.weapon-grid{grid-template-columns:1fr}
+}
+@media(max-width:550px){
+  .topbar{justify-content:center}
+  .nav{justify-content:center}
+  .nav button{padding:9px;font-size:10px}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .section-head{display:block}
+  .entry-rows{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
 
-source = Path("/mnt/data/Pasted text(20261030-161848).txt")
-html = source.read_text(encoding="utf-8")
+<header class="topbar">
+  <a class="brand" href="#" onclick="showPage('home');return false">
+    <span class="logo">⚔</span>
+    <span>PVP INDIA<small>MINECRAFT • COMPETITIVE TIERS</small></span>
+  </a>
+  <nav class="nav">
+    <button class="active" id="nav-home" onclick="showPage('home')">HOME</button>
+    <button id="nav-tiers" onclick="showPage('tiers')">TIER LIST</button>
+    <button id="nav-event" onclick="showPage('event')">EVENT</button>
+    <button onclick="showPage('apply')">APPLY</button>
+    <a href="https://discord.gg/arykrwQ5QH" target="_blank">Discord</a>
+    <button class="signin" onclick="toast('Sign-in demo')">SIGN IN ↗</button>
+  </nav>
+</header>
 
-# Repair the image URL incorrectly loaded as JavaScript and remove the stray Python line.
-html = html.replace(
-    '<script src="https://cdn.discordapp.com/icons/896903597709754398/eb1a1048d3f7fb738dd1849163025c0b.png?size=256"></script>',
-    '<script src="https://cdn.jsdelivr.net/npm/skinview3d@3.2.0/bundles/skinview3d.bundle.js"></script>'
-)
-html = html.replace('\nout.write_text(html, encoding="utf-8")', "")
-html = html.replace("\nout.write_text(html, encoding='utf-8')", "")
+<main>
+<section id="home" class="page active">
+  <div class="hero">
+    <div>
+      <div class="eyebrow">THE COMMUNITY RANKING HUB</div>
+      <h1>PVP INDIA<br><span>TOURNAMENT.</span></h1>
+      <p>Player rankings forged in the Nether. Check each gamemode, compare tiers, and find the names climbing the PvP India leaderboard.</p>
+      <div class="actions">
+        <button class="btn" onclick="showPage('tiers')">EXPLORE TIERS ↗</button>
+        <button class="btn secondary" onclick="showPage('event')">VIEW EVENTS</button>
+      </div>
+    </div>
+    <div class="hero-art"><div class="block-card"><span>⚔️</span></div></div>
+  </div>
 
-polish = r"""
-/* FINAL POLISH — original warm gold / black / brown palette retained */
-:root { --motion: cubic-bezier(.2,.75,.25,1); }
-html { scroll-behavior:smooth; scroll-padding-top:105px; }
-body { -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; }
-a,button,input,select,textarea { -webkit-tap-highlight-color:transparent; }
-button,a,.btn,.copy,.signin-btn,.mode,.weapon-card,.feature,.stat,
-.match-card,.poster-card,.modal-close,.discord,.youtube-link {
-  transition: color .24s var(--motion), background-color .24s var(--motion),
-    border-color .24s var(--motion), box-shadow .3s var(--motion),
-    transform .3s var(--motion), filter .3s var(--motion);
-}
-button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,
-textarea:focus-visible,[role="button"]:focus-visible {
-  outline:2px solid var(--gold2); outline-offset:4px;
-}
-.btn,.signin-btn,.copy { position:relative; isolation:isolate; overflow:hidden; }
-.btn::after,.signin-btn::after,.copy::after {
-  content:""; position:absolute; z-index:-1; top:-60%; bottom:-60%; left:-45%;
-  width:34%; pointer-events:none;
-  background:linear-gradient(90deg,transparent,#fff9d888,transparent);
-  transform:translateX(-220%) rotate(18deg);
-  transition:transform .65s var(--motion);
-}
-.btn:hover::after,.signin-btn:hover::after,.copy:hover::after {
-  transform:translateX(570%) rotate(18deg);
-}
-.btn:hover,.signin-btn:hover {
-  transform:translateY(-3px); filter:brightness(1.07);
-  box-shadow:0 8px 0 #5b3919,0 13px 28px #0008,0 0 24px #e8b64c28;
-}
-.btn:active,.signin-btn:active,.copy:active { transform:translateY(1px) scale(.985); }
-.btn.secondary:hover { color:#fff0c3; border-color:var(--gold2); background:#302315; }
-.copy:hover { transform:translateY(-2px); filter:brightness(1.08); box-shadow:0 7px 18px #0006; }
-.nav button:hover,.mode:hover { transform:translateY(-2px); }
-.weapon-card:hover,.feature:hover,.stat:hover,.match-card:hover,.poster-card:hover {
-  transform:translateY(-5px); border-color:var(--gold);
-  box-shadow:0 15px 34px #0007,0 0 20px #e8b64c18;
-}
-.weapon-card:active,.mode:active { transform:scale(.98); }
-input:focus,select:focus,textarea:focus {
-  border-color:var(--gold2)!important; box-shadow:0 0 0 3px #e8b64c24!important;
-}
-.player-open { cursor:pointer; transition:color .2s ease; }
-.player-open:hover { color:var(--gold2); }
-.block-card { transition:transform .55s var(--motion),box-shadow .55s var(--motion); }
-.block-card:hover { transform:rotate(-2deg) translateY(-5px); box-shadow:18px 27px 0 #080706,0 0 75px #dca33b38,inset 0 0 0 5px #17100b; }
-.modal-card { will-change:transform; }
-::selection { background:#e8b64c66; color:#fff5df; }
-@media (hover:hover) and (pointer:fine) {
-  .brand-mark { transition:transform .35s var(--motion),filter .35s; }
-  .brand:hover .brand-mark { transform:rotate(3deg) scale(1.06); filter:brightness(1.12); }
-}
-@media (prefers-reduced-motion:reduce) {
-  *,*::before,*::after { scroll-behavior:auto!important; animation-duration:.01ms!important;
-    animation-iteration-count:1!important; transition-duration:.01ms!important; }
-}
-"""
-if "</style>" in html:
-    html = html.replace("</style>", polish + "\n</style>", 1)
+  <section class="section">
+    <div class="section-head"><div><div class="kicker">COMMUNITY STATISTICS</div><h2>The ranking hub.</h2></div></div>
+    <div class="stat-grid">
+      <div class="stat"><strong id="player-count">0</strong><span>RANKED PLAYERS</span></div>
+      <div class="stat"><strong>12</strong><span>GAME MODES</span></div>
+      <div class="stat"><strong>HT1</strong><span>TOP TIER LEVEL</span></div>
+      <div class="stat"><strong>24/7</strong><span>COMMUNITY HUB</span></div>
+    </div>
+  </section>
 
-# Ensure the icon link is a favicon, not a script.
-html = html.replace(
-    '<script src="https://cdn.discordapp.com/icons/896903597709754398/eb1a1048d3f7fb738dd1849163025c0b.png?size=256"></script>',
-    '<link rel="icon" href="https://cdn.discordapp.com/icons/896903597709754398/eb1a1048d3f7fb738dd1849163025c0b.png?size=256">'
-)
+  <section class="section">
+    <div class="section-head"><div><div class="kicker">CHOOSE YOUR ARENA</div><h2>Master every weapon.</h2></div></div>
+    <div class="weapon-grid">
+      <button class="weapon-card" onclick="filterMode('Sword')"><span class="weapon-icon">⚔️</span><b>SWORD</b><small>Classic melee combat</small></button>
+      <button class="weapon-card" onclick="filterMode('Mace')"><span class="weapon-icon">🔨</span><b>MACE</b><small>Heavy impact duels</small></button>
+      <button class="weapon-card" onclick="filterMode('Crystal')"><span class="weapon-icon">💎</span><b>CRYSTAL</b><small>Precision explosive PvP</small></button>
+    </div>
+  </section>
+</section>
 
-out = Path("/mnt/data/pvp-india-refined.html")
-out.write_text(html, encoding="utf-8")
-print(f"Created {out.name} — {out.stat().st_size:,} bytes")
+<section id="tiers" class="page">
+  <div class="list-head">
+    <div class="kicker">REAL TIERS / PLAYER INDEX</div>
+    <h1>THE TIER VAULT</h1>
+    <p>Browse players by gamemode, search names, and compare overall scores.</p>
+  </div>
+  <div class="controls">
+    <input id="search" class="search" placeholder="Search a player..." oninput="renderTable()">
+    <button class="mode active" onclick="setMode('All',this)">ALL MODES</button>
+    <button class="mode" onclick="setMode('Vanilla',this)">VANILLA</button>
+    <button class="mode" onclick="setMode('Sword',this)">SWORD</button>
+    <button class="mode" onclick="setMode('Mace',this)">MACE</button>
+    <button class="mode" onclick="setMode('UHC',this)">UHC</button>
+    <button class="mode" onclick="setMode('Axe',this)">AXE</button>
+    <button class="mode" onclick="setMode('Pot',this)">POT</button>
+    <button class="mode" onclick="setMode('NethOP',this)">NETHOP</button>
+    <button class="mode" onclick="setMode('Crystal',this)">CRYSTAL</button>
+    <button class="mode" onclick="setMode('SMP',this)">SMP</button>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>Player</th><th>Overall Tier</th><th>Vanilla</th><th>Sword</th><th>Mace</th><th>UHC</th><th>Points</th></tr></thead>
+      <tbody id="table-body"></tbody>
+    </table>
+  </div>
+</section>
+
+<section id="event" class="page">
+  <div class="list-head"><div class="kicker">PVP INDIA / COMPETITION</div><h1>TOURNAMENT ARENA</h1><p>Create a tournament bracket and enter your team details.</p></div>
+  <section class="section">
+    <div class="tournament-tools">
+      <label>Teams:
+        <select id="teamCount" class="field" onchange="buildBracket()">
+          <option value="4">4 teams</option>
+          <option value="8" selected>8 teams</option>
+          <option value="16">16 teams</option>
+        </select>
+      </label>
+      <button class="btn" onclick="buildBracket()">GENERATE BRACKET</button>
+      <button class="btn secondary" onclick="saveTournament()">SAVE ENTRIES</button>
+    </div>
+    <div class="bracket" id="bracket"></div>
+    <div class="entry-panel">
+      <h3>PLAYER REGISTRATION</h3>
+      <p>Enter a team name, player name, and Discord username.</p>
+      <div id="entryRows" class="entry-rows"></div>
+    </div>
+  </section>
+</section>
+
+<section id="apply" class="page">
+  <div class="list-head"><div class="kicker">JOIN THE RANKED COMMUNITY</div><h1>APPLY FOR A TIER</h1><p>Submit your player details and preferred gamemode.</p></div>
+  <section class="section">
+    <form id="tierApplyForm" class="apply-form">
+      <label>Minecraft username<input class="field" name="player" required placeholder="Your in-game name"></label>
+      <label>Discord username<input class="field" name="discord" required placeholder="Your Discord username"></label>
+      <label>Gamemode
+        <select class="field" name="mode">
+          <option>Sword</option><option>Axe</option><option>Pot</option>
+          <option>NethOP</option><option>Crystal</option><option>Mace</option>
+          <option>UHC</option><option>SMP</option><option>Vanilla</option>
+        </select>
+      </label>
+      <label>Previous tier / experience<textarea class="field" name="details" rows="4" placeholder="Your previous tier and experience"></textarea></label>
+      <button class="btn" type="submit">PREPARE APPLICATION ↗</button>
+    </form>
+  </section>
+</section>
+</main>
+
+<footer>
+  <span>◆ PVP INDIA — COMMUNITY RANKINGS</span>
+  <span>COMMUNITY RANKINGS • FAN-MADE SITE</span>
+  <span>Not affiliated with Mojang or Microsoft.</span>
+</footer>
+<div class="toast" id="toast">Updated!</div>
+
+<script>
+const players=[
+ {name:"DarkwarriorXO",vanilla:"HT4",sword:"LT4",mace:"HT4",uhc:"LT4",points:370},
+ {name:"Chiraggaming",vanilla:"—",sword:"HT5",mace:"HT5",uhc:"—",points:180},
+ {name:"Ghoulking",vanilla:"HT5",sword:"HT4",mace:"LT4",uhc:"—",points:250},
+ {name:"UI_INDRA",vanilla:"HT5",sword:"HT5",mace:"HT4",uhc:"—",points:220},
+ {name:"Nageshliveff",vanilla:"HT5",sword:"LT5",mace:"LT5",uhc:"—",points:120},
+ {name:"BlockVortex",vanilla:"HT4",sword:"LT4",mace:"HT5",uhc:"—",points:290},
+ {name:"FrostBytePvP",vanilla:"LT4",sword:"HT5",mace:"—",uhc:"LT5",points:245},
+ {name:"QuartzKnight",vanilla:"—",sword:"HT4",mace:"LT5",uhc:"HT5",points:265},
+ {name:"NovaClutch",vanilla:"LT5",sword:"LT4",mace:"HT5",uhc:"—",points:195},
+ {name:"EchoStriker",vanilla:"HT5",sword:"LT5",mace:"—",uhc:"HT4",points:155}
+];
+let selectedMode="All";
+
+function tierRank(t){
+ if(!t||t==="—")return 0;
+ const n=parseInt(t.replace(/[A-Z]/g,""))||5;
+ return (6-n)*10+(t.startsWith("HT")?5:0);
+}
+function overall(p){
+ const vals=["vanilla","sword","mace","uhc"].map(k=>tierRank(p[k]));
+ const best=Math.max(...vals);
+ if(!best)return "Unranked";
+ const level=6-Math.ceil(best/10);
+ return (best%10>=5?"HT":"LT")+level;
+}
+function badge(t){
+ if(!t||t==="—")return '<span class="tier">—</span>';
+ return `<span class="tier ${t.startsWith("HT")?"ht":"lt"}">${t}</span>`;
+}
+function renderTable(){
+ const q=(document.getElementById("search").value||"").toLowerCase();
+ const list=players.filter(p=>p.name.toLowerCase().includes(q));
+ const sorted=[...list].sort((a,b)=>b.points-a.points);
+ const body=document.getElementById("table-body");
+ body.innerHTML=sorted.map((p,i)=>{
+  const tier=selectedMode==="All"?p.vanilla:(p[selectedMode.toLowerCase()]||"—");
+  return `<tr>
+   <td>${String(i+1).padStart(2,"0")}</td>
+   <td><div class="player"><img class="head-icon" src="https://mc-heads.net/avatar/${encodeURIComponent(p.name)}/64" alt=""><span>${p.name}</span></div></td>
+   <td>${overall(p)}</td>
+   <td>${badge(selectedMode==="All"?p.vanilla:tier)}</td>
+   <td>${badge(p.sword)}</td><td>${badge(p.mace)}</td><td>${badge(p.uhc)}</td>
+   <td class="points">${p.points.toLocaleString()} pts</td>
+  </tr>`;
+ }).join("");
+ if(!sorted.length)body.innerHTML='<tr><td colspan="8">No players found.</td></tr>';
+}
+function setMode(mode,button){
+ selectedMode=mode;
+ document.querySelectorAll(".mode").forEach(b=>b.classList.toggle("active",b===button));
+ renderTable();
+}
+function filterMode(mode){
+ showPage("tiers");
+ const button=[...document.querySelectorAll(".mode")].find(b=>b.textContent.trim().toLowerCase()===mode.toLowerCase());
+ if(button)setMode(mode,button);
+}
+function showPage(id){
+ document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===id));
+ document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
+ const nav=document.getElementById("nav-"+id);
+ if(nav)nav.classList.add("active");
+ window.scrollTo({top:0,behavior:"smooth"});
+ if(id==="tiers")renderTable();
+ if(id==="event")buildBracket();
+}
+function toast(msg){
+ const t=document.getElementById("toast");
+ t.textContent=msg;t.classList.add("show");
+ setTimeout(()=>t.classList.remove("show"),2000);
+}
+document.getElementById("player-count").textContent=players.length;
+renderTable();
+
+const teamNames=["EMBER","OBSIDIAN","NETHER","PHANTOM","VOID","TITAN","RAVEN","STORM","BLAZE","FROST","ONYX","NOVA","VANGUARD","ECLIPSE","DRAGON","APEX"];
+function buildBracket(){
+ const count=Number(document.getElementById("teamCount").value);
+ const bracket=document.getElementById("bracket");
+ const rows=document.getElementById("entryRows");
+ bracket.innerHTML="";
+ let teams=teamNames.slice(0,count);
+ const rounds=Math.log2(count);
+ const labels=["ROUND OF 16","QUARTER-FINAL","SEMI-FINAL","GRAND FINAL"];
+ for(let r=0;r<rounds;r++){
+  const round=document.createElement("div");
+  round.className="bracket-round";
+  const title=document.createElement("h3");
+  title.textContent=labels[4-rounds+r]||"ROUND "+(r+1);
+  round.appendChild(title);
+  for(let m=0;m<teams.length/2;m++){
+   const match=document.createElement("div");
+   match.className="match-card";
+   match.innerHTML=`<div class="match-team">${teams[m*2]} — VS</div><div class="match-team">${teams[m*2+1]}</div>`;
+   round.appendChild(match);
+  }
+  bracket.appendChild(round);
+  teams=Array.from({length:teams.length/2},(_,i)=>"WINNER "+(i+1));
+ }
+ rows.innerHTML=Array.from({length:count},(_,i)=>`
+  <div class="entry-row">
+   <input placeholder="Team ${i+1}" value="${teamNames[i]}">
+   <input placeholder="Player name">
+   <input placeholder="Discord username">
+  </div>`).join("");
+}
+function saveTournament(){
+ const entries=[...document.querySelectorAll(".entry-row")].map(row=>[...row.querySelectorAll("input")].map(i=>i.value));
+ localStorage.setItem("pvpIndiaTournamentEntries",JSON.stringify(entries));
+ toast("Tournament entries saved!");
+}
+document.getElementById("tierApplyForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ const data=Object.fromEntries(new FormData(e.currentTarget).entries());
+ const message=`PvP India Tier Application\nPlayer: ${data.player}\nDiscord: ${data.discord}\nMode: ${data.mode}\nDetails: ${data.details}`;
+ if(navigator.clipboard?.writeText){
+  navigator.clipboard.writeText(message).then(()=>toast("Application copied! Paste it in Discord."));
+ }else toast("Application ready!");
+ window.open("https://discord.gg/arykrwQ5QH","_blank");
+});
+buildBracket();
+</script>
+</body>
+</html>
