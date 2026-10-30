@@ -109,18 +109,109 @@ footer{padding:26px clamp(18px,6vw,88px);display:flex;justify-content:space-betw
 .toast.show{opacity:1;transform:translate(-50%,0)}
 @media(max-width:850px){.hero{grid-template-columns:1fr;padding-top:58px;padding-bottom:45px}.hero-art{min-height:240px}.block-card{width:230px}.stat-grid{grid-template-columns:repeat(2,1fr)}.feature-grid{grid-template-columns:1fr}.nav{gap:2px}.nav button{padding:9px 10px}.brand small{letter-spacing:1px}}
 @media(max-width:540px){.topbar{padding:0 12px;height:68px}.brand{gap:7px;font-size:12px}.brand-mark{width:35px;height:35px}.nav button{font-size:10px;padding:9px 7px}.discord{font-size:10px;padding:8px 2px;margin-left:2px}.discord-icon{width:20px;height:20px}.hero{padding-left:20px;padding-right:20px;min-height:unset}h1{letter-spacing:-2px}.section-head{display:block}.section-head p{margin-top:12px}.ip-strip{align-items:flex-start;flex-direction:column}.copy{width:100%}.stat{padding:17px}.stat strong{font-size:28px}}
+
+/* ===== PVP INDIA FEATURE UPGRADE — original gold/black palette retained ===== */
+.topbar{height:92px;padding-inline:clamp(18px,4.8vw,82px);gap:18px}
+.brand{gap:15px;font-size:clamp(16px,1.5vw,21px);letter-spacing:2px;white-space:nowrap}
+.brand-mark{width:54px;height:54px;font-size:26px}
+.brand small{font-size:10px;letter-spacing:3.4px}
+.nav{gap:6px}
+.nav button,.discord,.youtube-link{position:relative;overflow:hidden}
+.nav button:after{content:"";position:absolute;left:14px;right:14px;bottom:5px;height:2px;background:var(--gold2);transform:scaleX(0);transform-origin:left;transition:transform .28s}
+.nav button:hover:after,.nav button.active:after{transform:scaleX(1)}
+.discord,.youtube-link{display:inline-flex;align-items:center;gap:7px;font-size:13px}
+.youtube-link{color:#c9b99e;padding:10px 5px;font-weight:900}
+.youtube-link:hover{color:#fff;transform:translateY(-1px)}
+.youtube-icon{display:grid;place-items:center;width:22px;height:16px;border-radius:5px;background:#d22b20;color:#fff;font-size:10px}
+.signin-btn{position:relative;overflow:hidden;border:1px solid #a87931;background:linear-gradient(110deg,#f0c45f,#b87825);color:#1b1006;font-weight:1000;padding:13px 17px;letter-spacing:1px;white-space:nowrap;box-shadow:0 4px 0 #5b3919;animation:signSlide .75s cubic-bezier(.2,.8,.2,1) both}
+.signin-btn span{display:inline-block;margin-left:9px;transition:transform .25s}
+.signin-btn:hover span{transform:translate(3px,-3px)}
+@keyframes signSlide{from{opacity:0;transform:translateX(35px)}to{opacity:1;transform:none}}
+.scroll-progress{position:fixed;z-index:30;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#a66c25,#ffe29a,#a66c25);box-shadow:0 0 12px #f0c45f;pointer-events:none}
+.ticker{height:47px;align-items:center}
+.ticker-track{display:flex;width:max-content;animation:tickerMove 32s linear infinite}
+.ticker:hover .ticker-track{animation-play-state:paused}
+.ticker-item{white-space:nowrap;padding:13px 28px;color:#d7b46e;font-size:11px;font-weight:1000;letter-spacing:2px;border-right:1px solid #4d361b}
+.ticker-item b{color:#fff0c3;margin-right:8px}
+@keyframes tickerMove{to{transform:translateX(-50%)}}
+.weapon-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.weapon-card{min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;background:linear-gradient(145deg,#292016,#17120e);border:1px solid #674b26;color:var(--text);transition:transform .35s,border-color .35s,box-shadow .35s;position:relative;overflow:hidden}
+.weapon-card:before{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,#ffe09a28 48%,transparent 65%);transform:translateX(-130%);transition:transform .6s}
+.weapon-card:hover{transform:translateY(-7px);border-color:#f1c766;box-shadow:0 14px 35px #0008,0 0 24px #e8b64c22}
+.weapon-card:hover:before{transform:translateX(130%)}
+.weapon-art{width:100px;height:100px;display:grid;place-items:center;filter:drop-shadow(0 9px 8px #000);transition:transform .35s,filter .35s}
+.weapon-art svg{width:100%;height:100%;fill:#c5c5c5;stroke:#fff0c3;stroke-width:2;stroke-linejoin:bevel;image-rendering:pixelated}
+.weapon-detail{fill:none;stroke:#5a4630;stroke-width:4}
+.weapon-card:hover .weapon-art{transform:rotate(-12deg) scale(1.16);filter:drop-shadow(0 0 15px #f1c766)}
+.weapon-card b{letter-spacing:3px;color:#f5d58a}
+.weapon-card small{color:#a99a83}
+.ribbon-section{padding:0 clamp(18px,7vw,100px) 45px;overflow:hidden}
+.ribbon-pull{height:48px;display:flex;justify-content:center;align-items:center;gap:20px;background:linear-gradient(90deg,#5d3b19,#d6a64c,#5d3b19);color:#1b1006;font-weight:1000;font-size:11px;letter-spacing:2px;cursor:grab;user-select:none;touch-action:pan-y;box-shadow:0 6px 18px #0006}
+.ribbon-pull:active{cursor:grabbing}
+.ribbon-handle{font-size:20px;animation:handleBob 1.1s infinite}
+@keyframes handleBob{50%{transform:translateY(4px)}}
+.poster-reveal{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;max-height:0;opacity:0;overflow:hidden;transform:translateY(-15px);transition:max-height .65s,opacity .45s,transform .45s,padding .45s}
+.poster-reveal.open{max-height:380px;opacity:1;transform:none;padding:18px 0 0}
+.poster-card{min-height:230px;padding:20px;display:flex;flex-direction:column;justify-content:space-between;background:linear-gradient(145deg,#62451f,#1a120b 70%);border:2px solid #c99a42;box-shadow:inset 0 0 0 5px #21170d;text-align:center}
+.poster-card span,.poster-card small{font-size:9px;letter-spacing:2px;color:#f3d28a}
+.poster-card strong{font-size:clamp(22px,3vw,38px);line-height:.95;color:#fff0c3;text-shadow:3px 3px #4b2b12}
+.poster-two{background:linear-gradient(145deg,#57321f,#17100d 72%);border-color:#a66d3d}
+.poster-three{background:linear-gradient(145deg,#594c23,#17100d 72%);border-color:#e1c16a}
+.tournament-tools{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
+.tournament-tools label{display:flex;gap:10px;align-items:center;color:#d9c59e;font-weight:800}
+.tournament-tools select,.apply-form input,.apply-form select,.apply-form textarea,.signin-card input{background:#100d0b;border:1px solid #624821;color:#fff0c3;padding:12px 14px;outline:none}
+.bracket-scroll{overflow-x:auto;padding:8px 0 20px}
+.bracket{display:flex;gap:25px;align-items:stretch;min-width:max-content}
+.bracket-round{display:flex;flex-direction:column;justify-content:space-around;gap:18px;min-width:205px}
+.bracket-round h3{font-size:11px;letter-spacing:2px;color:#d5aa56;text-align:center}
+.match-card{background:linear-gradient(145deg,#292016,#15100c);border:1px solid #654821;padding:10px;box-shadow:0 8px 20px #0004}
+.match-team{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px;color:#e9d9b7;font-size:12px;border-bottom:1px solid #44321d}
+.match-team:last-child{border:0}
+.match-team strong{color:#f4d17d;font-size:10px}
+.entry-panel{margin-top:25px;padding:24px;background:#1b1611;border:1px solid #5c4221}
+.entry-panel h3{margin:0;color:#f1ce7a;letter-spacing:2px}
+.entry-panel p,.form-note{color:#a99a83;font-size:12px}
+.entry-rows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.entry-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:10px;background:#100d0b;border:1px solid #45321b}
+.entry-row input{min-width:0;width:100%;padding:10px;background:#0a0807;border:1px solid #49351d;color:#fff0c3}
+.apply-form{max-width:650px;display:grid;gap:17px;padding:28px;background:linear-gradient(145deg,#292016,#17120e);border:1px solid #5c4221}
+.apply-form label,.signin-card label{display:grid;gap:8px;color:#e8c875;font-size:12px;font-weight:900;letter-spacing:1px}
+.apply-form textarea{resize:vertical}
+.modal-backdrop{position:fixed;inset:0;z-index:100;background:#050403eF;display:flex;align-items:center;justify-content:center;padding:18px;opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
+.modal-backdrop.open{opacity:1;visibility:visible}
+.modal-card{width:min(460px,100%);position:relative;padding:34px;background:linear-gradient(145deg,#292016,#100d0b);border:1px solid #9b702f;box-shadow:0 25px 90px #000c;transform:translateY(25px);transition:transform .35s}
+.modal-backdrop.open .modal-card{transform:none}
+.modal-card h2{margin:10px 0;color:#ffe09a}
+.modal-card p{color:#b9a88e;line-height:1.6}
+.modal-card form{display:grid;gap:15px}
+.modal-close{position:absolute;right:14px;top:10px;border:0;background:transparent;color:#f3d28a;font-size:30px}
+.preview-backdrop{overflow:auto;align-items:flex-start}
+.preview-shell{width:min(1400px,100%);min-height:90vh;margin:auto;padding:30px;background:#100d0b;border:1px solid #8b6428;box-shadow:0 0 70px #000}
+.preview-top{display:flex;align-items:center;justify-content:space-between;position:relative}
+.preview-top h2{color:#ffe09a}
+.preview-shell .bracket{justify-content:flex-start}
+.preview-player-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:25px}
+.preview-player{padding:15px;background:#211910;border:1px solid #60451f}
+.preview-player strong{display:block;color:#ffe09a}
+.preview-player small{color:#b9a88e}
+body.modal-open{overflow:hidden}
+@media(max-width:900px){.topbar{height:auto;min-height:84px;flex-wrap:wrap;padding-block:12px}.nav{flex-wrap:wrap;justify-content:flex-end}.weapon-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:650px){.topbar{justify-content:center}.brand{width:100%;justify-content:center}.nav{justify-content:center}.nav button{font-size:10px}.signin-btn{padding:9px 11px;font-size:10px}.weapon-grid,.poster-reveal{grid-template-columns:1fr}.weapon-card{min-height:165px}.poster-reveal.open{max-height:900px}.entry-rows{grid-template-columns:1fr}.entry-row{grid-template-columns:1fr}.tournament-tools{align-items:stretch}.tournament-tools .btn{flex:1}.preview-shell{padding:16px}}
+\n@media(max-width:1100px){.topbar{padding-inline:16px}.brand small{letter-spacing:2px}.nav button{padding:9px 10px}.discord,.youtube-link{font-size:11px}}
 </style>
 </head>
 <body>
 <header class="topbar">
   <a class="brand" href="#" onclick="showPage('home');return false">
-    <span class="brand-mark skin-mark"><img src="https://cdn.vectorstock.com/i/preview-1x/44/71/po-logo-monogram-with-emblem-shield-style-design-vector-33184471.jpg" alt="Real Tier Minecraft tier"></span><span>PVP INDIA<small>MINECRAFT</small></span>
+    <span class="brand-mark skin-mark"><img src="https://cdn.vectorstock.com/i/preview-1x/44/71/po-logo-monogram-with-emblem-shield-style-design-vector-33184471.jpg" alt="Real Tier Minecraft tier"></span><span>PVP INDIA<small>MINECRAFT • COMPETITIVE TIERS</small></span>
   </a>
   <nav class="nav">
     <button class="active" id="nav-home" onclick="showPage('home')">HOME</button>
     <button id="nav-tiers" onclick="showPage('tiers')">TIER LIST</button>
     <button id="nav-event" onclick="showPage('event')">EVENT</button>
     <a class="discord" href="https://discord.gg/arykrwQ5QH" target="_blank" rel="noopener"><svg class="discord-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19.7 5.2a18.7 18.7 0 0 0-4.6-1.4l-.6 1.2a17.2 17.2 0 0 0-5 0L8.9 3.8a18.7 18.7 0 0 0-4.6 1.4C1.4 9.5.6 13.7 1 17.9a18.9 18.9 0 0 0 5.7 2.9l1.2-2a12 12 0 0 1-1.9-.9l.5-.4a13.4 13.4 0 0 0 11 0l.5.4a12 12 0 0 1-1.9.9l1.2 2a18.9 18.9 0 0 0 5.7-2.9c.5-4.9-.8-9.1-3.3-12.7ZM8.8 14.8c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2Zm6.4 0c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2Z"/></svg><span>Discord</span></a>
+     <a class="social-link youtube-link" href="https://www.youtube.com/" target="_blank" rel="noopener" aria-label="YouTube channel"><span class="youtube-icon">▶</span><span>YouTube</span></a>
+     <button class="signin-btn" id="signInBtn" onclick="openSignIn()">SIGN IN <span>↗</span></button>
   </nav>
 </header>
 
@@ -133,14 +224,14 @@ footer{padding:26px clamp(18px,6vw,88px);display:flex;justify-content:space-betw
       <p>Player rankings forged in the Nether. Check each gamemode, compare tiers, and find the names climbing the Real Tiers leaderboard.</p>
       <div class="actions">
         <button class="btn" onclick="showPage('tiers')">⚒ Explore Rankings</button>
-        <button class="btn secondary" onclick="copyIP()">▣ Copy Server IP</button>
+        
       </div>
     </div>
     <div class="hero-art" aria-label="Decorative Minecraft-inspired block">
       <div class="block-card"><canvas id="heroSkinCanvas" aria-label="3D Minecraft DarkWarriorXO model"></canvas><div class="block-label">REAL TIERS</div></div>
     </div>
   </div>
-  <div class="ticker"><span><b>◆</b> COMMUNITY RANKINGS</span><span><b>✦</b> MULTI-GAMEMODE RANKS</span><span><b>◆</b> COMMUNITY LEADERBOARD</span><span><b>✦</b> PLAY • PRACTICE • CLIMB</span></div>
+  <div class="ticker" aria-label="Tournament updates"><div class="ticker-track" id="tickerTrack"></div></div>
   <section class="section">
     <div class="section-head"><div><div class="kicker">THE NETWORK</div><h2>Forged for fighters.</h2></div><p>A clear place to check player rankings, compare gamemodes, and follow the leaderboard.</p></div>
     <div class="stat-grid">
@@ -149,10 +240,19 @@ footer{padding:26px clamp(18px,6vw,88px);display:flex;justify-content:space-betw
       <div class="stat"><strong>HT1</strong><span>TOP TIER LEVEL</span></div>
       <div class="stat"><strong>24/7</strong><span>COMMUNITY HUB</span></div>
     </div>
-    <div class="ip-strip">
-      <div><small>JOIN THE SERVER</small><div class="ip" id="server-ip">play.mcpvp.com</div></div>
-      <button class="copy" onclick="copyIP()">COPY IP ↗</button>
+    </section>
+
+  <section class="section weapon-section">
+    <div class="section-head"><div><div class="kicker">CHOOSE YOUR ARENA</div><h2>Master every weapon.</h2></div><p>Hover or tap a weapon to reveal its mode details.</p></div>
+    <div class="weapon-grid">
+      <button class="weapon-card" data-weapon="Sword"><span class="weapon-art sword-art" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M43 4 60 4 60 21 24 57 7 57 7 40Z"/><path d="m13 35 16 16M19 29l16 16M8 40l16 16" class="weapon-detail"/></svg></span><b>SWORD</b><small>Classic melee combat</small></button>
+      <button class="weapon-card" data-weapon="Mace"><span class="weapon-art mace-art" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M29 8h9v46h-9zM18 7h31v19H18zM13 12h41v9H13z"/></svg></span><b>MACE</b><small>Heavy impact duels</small></button>
+      <button class="weapon-card" data-weapon="Crystal"><span class="weapon-art crystal-art" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M32 4 49 17 56 38 32 60 8 38 15 17Z"/><path d="M15 17h34M8 38h48M32 4v56M15 17l17 43 17-43" class="weapon-detail"/></svg></span><b>CRYSTAL</b><small>Precision explosive PvP</small></button>
     </div>
+  </section>
+  <section class="ribbon-section">
+    <div class="ribbon-pull" id="posterRibbon" role="button" tabindex="0" aria-expanded="false"><span>✦ PULL TO REVEAL TOURNAMENT POSTERS</span><span class="ribbon-handle">↕</span></div>
+    <div class="poster-reveal" id="posterReveal"><div class="poster-card"><span>01 / OPEN BRACKET</span><strong>THE GOLDEN<br>GAUNTLET</strong><small>COMMUNITY SHOWDOWN</small></div><div class="poster-card poster-two"><span>02 / WEEKLY EVENT</span><strong>CLASH OF<br>CHAMPIONS</strong><small>PROVE YOUR TIER</small></div><div class="poster-card poster-three"><span>03 / SEASON FINAL</span><strong>INDIA<br>INVITATIONAL</strong><small>RISE TO THE TOP</small></div></div>
   </section>
   <section class="section" style="padding-top:0">
     <div class="section-head"><div><div class="kicker">HOW IT WORKS</div><h2>Three steps. One ladder.</h2></div></div>
@@ -189,9 +289,34 @@ footer{padding:26px clamp(18px,6vw,88px);display:flex;justify-content:space-betw
     </table>
   </div>
 </section>
-</main>
+
+<section id="event" class="page">
+  <div class="list-head"><div class="kicker">PVP INDIA / LIVE COMPETITION</div><h1>TOURNAMENT ARENA</h1><p>Build a multi-team bracket, enter player and Discord details, and preview the event board.</p></div>
+  <section class="section tournament-section">
+    <div class="section-head"><div><div class="kicker">SEASON EVENT</div><h2>Champions bracket.</h2></div><button class="btn" onclick="openBracketPreview()">FULL-SCREEN PREVIEW ↗</button></div>
+    <div class="tournament-tools"><label>Teams <select id="teamCount" onchange="buildBracket()"><option value="4">4 teams</option><option value="8" selected>8 teams</option><option value="16">16 teams</option></select></label><button class="btn secondary" onclick="buildBracket()">GENERATE BRACKET</button><button class="btn secondary" onclick="saveTournament()">SAVE ENTRIES</button></div>
+    <div class="bracket-scroll"><div class="bracket" id="bracket"></div></div>
+    <div class="entry-panel"><h3>PLAYER REGISTRATION</h3><p>Enter a team name, player name, and Discord username for each slot.</p><div id="entryRows" class="entry-rows"></div></div>
+  </section>
+</section>
+<section id="apply" class="page">
+  <div class="list-head"><div class="kicker">JOIN THE RANKED COMMUNITY</div><h1>APPLY FOR A TIER</h1><p>Submit your player details and preferred gamemode. A staff member can review your application in Discord.</p></div>
+  <section class="section apply-section"><form id="tierApplyForm" class="apply-form">
+    <label>Minecraft username<input name="player" required placeholder="Your in-game name"></label>
+    <label>Discord username<input name="discord" required placeholder="name or name#0000"></label>
+    <label>Gamemode<select name="mode"><option>Sword</option><option>Axe</option><option>Pot</option><option>NethOP</option><option>Crystal</option><option>Mace</option><option>UHC</option><option>SMP</option><option>Vanilla</option><option>Bedrock</option></select></label>
+    <label>Previous tier / experience<textarea name="details" rows="4" placeholder="Share your previous tier, experience, and availability"></textarea></label>
+    <button class="btn" type="submit">PREPARE APPLICATION ↗</button><p class="form-note">This demo prepares a message; it does not send data to a server.</p>
+  </form></section>
+</section>
+\n</main>
 <footer><span>◆ REAL TIERS — COMMUNITY RANKINGS</span><span>COMMUNITY RANKINGS • FAN-MADE SITE</span><span>Not affiliated with Mojang or Microsoft.</span></footer>
-<div class="toast" id="toast">Copied!</div>
+<div class="toast" id="toast">Updated!</div>\n
+<div class="scroll-progress" id="scrollProgress"></div>
+<div class="modal-backdrop" id="signInModal" aria-hidden="true"><div class="modal-card signin-card"><button class="modal-close" onclick="closeModal('signInModal')">×</button><div class="kicker">PLAYER PORTAL</div><h2>WELCOME BACK.</h2><p>Sign in to manage your player profile and tournament entries.</p><form id="signInForm"><label>Player / Discord<input required placeholder="Enter your username"></label><label>Password<input type="password" required placeholder="Password"></label><button class="btn" type="submit">SIGN IN</button></form><small class="form-note">Demo sign-in UI — connect an authentication backend to enable accounts.</small></div></div>
+<div class="modal-backdrop" id="playerPreview" aria-hidden="true"><div class="modal-card player-modal"><button class="modal-close" onclick="closeModal('playerPreview')">×</button><div id="playerPreviewContent"></div></div></div>
+<div class="modal-backdrop preview-backdrop" id="bracketPreview" aria-hidden="true"><div class="preview-shell"><div class="preview-top"><div><div class="kicker">PVP INDIA / EVENT PREVIEW</div><h2>CHAMPIONS BRACKET</h2></div><button class="modal-close" onclick="closeModal('bracketPreview')">×</button></div><div id="previewContent"></div><div class="preview-player-grid" id="previewPlayers"></div></div></div>
+
 <script>
 const players=[
 {name:"DarkwarriorXO",premium:true,vanilla:"HT4",sword:"LT4",mace:"HT4",uhc:"LT4",points:370},
@@ -219,17 +344,110 @@ function renderTable(){
  body.innerHTML=sorted.map((p,i)=>{
   const show=k=>selectedMode==="All"||selectedMode===k;
   const tierForMode=selectedMode==="All"?p.vanilla:(p[selectedMode.toLowerCase().replace(" ","")]||"—");
-  return `<tr><td class="rank">${String(i+1).padStart(2,"0")}</td><td><div class="player"><img class="head-icon" src="https://mc-heads.net/avatar/${encodeURIComponent(p.name)}/64" alt="${p.name} Minecraft skin" loading="lazy"><span>${p.name}${p.premium?'<span class="premium">PREMIUM</span>':""}${p.demo?'<span class="premium">DEMO</span>':""}</span></div></td><td class="overall">${overall(p)}</td><td>${badge(selectedMode==="All"?p.vanilla:tierForMode)}</td><td>${badge(p.sword)}</td><td>${badge(p.mace)}</td><td>${badge(p.uhc)}</td><td class="points">${p.points.toLocaleString()} pts</td></tr>`;
+  return `<tr><td class="rank">${String(i+1).padStart(2,"0")}</td><td><div class="player"><img class="head-icon" src="https://mc-heads.net/avatar/${encodeURIComponent(p.name)}/64" alt="${p.name} Minecraft skin" loading="lazy"><span class="player-open" onclick="openPlayerPreview('${p.name.replace(/'/g, "\\'")}')">${p.name}${p.premium?'<span class="premium">PREMIUM</span>':""}${p.demo?'<span class="premium">DEMO</span>':""}</span></div></td><td class="overall">${overall(p)}</td><td>${badge(selectedMode==="All"?p.vanilla:tierForMode)}</td><td>${badge(p.sword)}</td><td>${badge(p.mace)}</td><td>${badge(p.uhc)}</td><td class="points">${p.points.toLocaleString()} pts</td></tr>`;
  }).join("");
  if(!sorted.length)body.innerHTML='<tr><td colspan="8" class="empty">No players found. Try another search.</td></tr>';
 }
 function setMode(mode,button){selectedMode=mode;document.querySelectorAll(".mode").forEach(b=>b.classList.toggle("active",b===button));renderTable()}
-function showPage(id){document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===id));document.getElementById("nav-home").classList.toggle("active",id==="home");document.getElementById("nav-tiers").classList.toggle("active",id==="tiers");window.scrollTo({top:0,behavior:"smooth"});if(id==="tiers")renderTable()}
-function copyIP(){const ip="play.mcpvp.com";if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(ip).then(()=>toast("Server IP copied!")).catch(()=>fallbackCopy(ip))}else fallbackCopy(ip)}
-function fallbackCopy(text){const el=document.createElement("textarea");el.value=text;document.body.appendChild(el);el.select();document.execCommand("copy");el.remove();toast("Server IP copied!")}
+function showPage(id){document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===id));["home","tiers","event","apply"].forEach(key=>{const el=document.getElementById("nav-"+key);if(el)el.classList.toggle("active",id===key)});window.scrollTo({top:0,behavior:"smooth"});if(id==="tiers")renderTable();if(id==="event")buildBracket()}
 function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1800)}
 document.getElementById("player-count").textContent=players.length;
 renderTable();
+
+// ===== Interactive additions =====
+const eventFeed = [
+  "TOURNAMENT REGISTRATION OPEN", "CHAMPIONS BRACKET • 8 TEAMS",
+  "PLAYER POINTS UPDATED • COMMUNITY LADDER", "NEXT SHOWDOWN • CHECK DISCORD",
+  "TIER APPLICATIONS • NOW ACCEPTING"
+];
+function updateTicker(){
+  const track=document.getElementById("tickerTrack");
+  if(!track)return;
+  const items=[...eventFeed,...eventFeed];
+  track.innerHTML=items.map((item,i)=>`<span class="ticker-item"><b>${i%2?"✦":"◆"}</b>${item}</span>`).join("");
+}
+updateTicker();
+
+function openModal(id){const el=document.getElementById(id);if(!el)return;el.classList.add("open");el.setAttribute("aria-hidden","false");document.body.classList.add("modal-open")}
+function closeModal(id){const el=document.getElementById(id);if(!el)return;el.classList.remove("open");el.setAttribute("aria-hidden","true");document.body.classList.remove("modal-open")}
+function openSignIn(){openModal("signInModal")}
+document.getElementById("signInForm")?.addEventListener("submit",e=>{e.preventDefault();toast("Sign-in demo — connect authentication to continue");closeModal("signInModal")});
+document.querySelectorAll(".modal-backdrop").forEach(el=>el.addEventListener("click",e=>{if(e.target===el)closeModal(el.id)}));
+document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelectorAll(".modal-backdrop.open").forEach(m=>closeModal(m.id))});
+
+window.addEventListener("scroll",()=>{
+  const max=document.documentElement.scrollHeight-window.innerHeight;
+  document.getElementById("scrollProgress").style.width=(max>0?window.scrollY/max*100:0)+"%";
+},{passive:true});
+
+document.querySelectorAll(".weapon-card").forEach(card=>{
+  card.addEventListener("click",()=>{
+    const mode=card.dataset.weapon;
+    showPage("tiers");
+    const button=[...document.querySelectorAll(".mode")].find(b=>b.dataset.mode===mode);
+    if(button)setMode(mode,button);
+  });
+});
+
+const ribbon=document.getElementById("posterRibbon"), reveal=document.getElementById("posterReveal");
+let ribbonStart=0, ribbonDragged=false;
+function togglePosters(){const open=reveal.classList.toggle("open");ribbon.setAttribute("aria-expanded",String(open))}
+ribbon.addEventListener("click",()=>{if(!ribbonDragged)togglePosters();ribbonDragged=false});
+ribbon.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();togglePosters()}});
+ribbon.addEventListener("pointerdown",e=>{ribbonStart=e.clientY;ribbonDragged=false;ribbon.setPointerCapture(e.pointerId)});
+ribbon.addEventListener("pointerup",e=>{const delta=e.clientY-ribbonStart;if(Math.abs(delta)>12){ribbonDragged=true;if(delta>0&&!reveal.classList.contains("open"))togglePosters();if(delta<0&&reveal.classList.contains("open"))togglePosters();setTimeout(()=>ribbonDragged=false,80)}});
+
+const teamNames=["EMBER","OBSIDIAN","NETHER","PHANTOM","VOID","TITAN","RAVEN","STORM","BLAZE","FROST","ONYX","NOVA","VANGUARD","ECLIPSE","DRAGON","APEX"];
+function makeMatch(a,b){return `<div class="match-card"><div class="match-team"><span>${a}</span><strong>VS</strong></div><div class="match-team"><span>${b}</span><strong>—</strong></div></div>`}
+function buildBracket(){
+  const count=Number(document.getElementById("teamCount")?.value||8);
+  const bracket=document.getElementById("bracket"), rows=document.getElementById("entryRows");
+  if(!bracket||!rows)return;
+  const rounds=Math.log2(count), labels=["ROUND OF 16","QUARTER-FINAL","SEMI-FINAL","GRAND FINAL"];
+  bracket.innerHTML="";
+  let teams=teamNames.slice(0,count);
+  for(let r=0;r<rounds;r++){
+    const round=document.createElement("div");round.className="bracket-round";
+    const title=document.createElement("h3");title.textContent=labels[4-rounds+r]||`ROUND ${r+1}`;round.appendChild(title);
+    const matches=teams.length/2;
+    for(let m=0;m<matches;m++)round.insertAdjacentHTML("beforeend",makeMatch(teams[m*2]||"TBD",teams[m*2+1]||"TBD"));
+    bracket.appendChild(round);
+    teams=Array.from({length:matches},(_,i)=>`WINNER ${r+1}.${i+1}`);
+  }
+  rows.innerHTML=Array.from({length:count},(_,i)=>`<div class="entry-row"><input aria-label="Team ${i+1}" placeholder="Team ${i+1}" value="${teamNames[i]}"><input aria-label="Player ${i+1}" placeholder="Player name"><input aria-label="Discord ${i+1}" placeholder="Discord username"></div>`).join("");
+}
+function getEntries(){
+  return [...document.querySelectorAll(".entry-row")].map(row=>{const inputs=row.querySelectorAll("input");return {team:inputs[0].value.trim(),player:inputs[1].value.trim(),discord:inputs[2].value.trim()}});
+}
+function saveTournament(){
+  const entries=getEntries();
+  try{localStorage.setItem("pvpIndiaTournamentEntries",JSON.stringify(entries));toast("Tournament entries saved on this device")}catch(e){toast("Could not save entries")}
+}
+function openPlayerPreview(name){
+  const p=players.find(x=>x.name===name);if(!p)return;
+  document.getElementById("playerPreviewContent").innerHTML=`<div class="kicker">PLAYER PROFILE / FULL SCREEN</div><div class="player" style="font-size:22px;margin:18px 0"><img class="head-icon" style="width:64px;height:64px" src="https://mc-heads.net/avatar/${encodeURIComponent(p.name)}/128"><strong>${p.name}</strong></div><h2 style="color:#ffe09a">${overall(p)} OVERALL</h2><p style="color:#b9a88e">Total points: <b>${p.points}</b></p><div class="preview-player-grid">${["vanilla","sword","mace","uhc"].map(k=>`<div class="preview-player"><small>${k.toUpperCase()}</small><strong>${p[k]||"—"}</strong></div>`).join("")}</div><p class="form-note">Tier and points shown are the entries currently stored in this website demo.</p>`;
+  openModal("playerPreview");
+}
+function openBracketPreview(){
+  const entries=getEntries();
+  const content=document.getElementById("previewContent");
+  const source=document.getElementById("bracket");
+  content.innerHTML=`<div class="bracket-scroll">${source.outerHTML}</div>`;
+  document.getElementById("previewPlayers").innerHTML=entries.map((p,i)=>`<div class="preview-player"><strong>${p.team||"TEAM "+(i+1)}</strong><span>${p.player||"Player not entered"}</span><br><small>${p.discord||"Discord not entered"} • Tier pending</small></div>`).join("");
+  openModal("bracketPreview");
+}
+buildBracket();
+
+document.getElementById("tierApplyForm")?.addEventListener("submit",e=>{
+  e.preventDefault();
+  const data=Object.fromEntries(new FormData(e.currentTarget).entries());
+  const message=`PvP India Tier Application%0APlayer: ${encodeURIComponent(data.player)}%0ADiscord: ${encodeURIComponent(data.discord)}%0AMode: ${encodeURIComponent(data.mode)}%0ADetails: ${encodeURIComponent(data.details||"Not provided")}`;
+  toast("Application prepared — opening Discord");
+  window.open("https://discord.gg/arykrwQ5QH","_blank","noopener");
+  // Copyable application text for the user; no backend submission is implied.
+  if(navigator.clipboard?.writeText)navigator.clipboard.writeText(decodeURIComponent(message.replace(/%0A/g,"\n"))).catch(()=>{});
+});
+
 
 // 3D Steve showcase: keeps the original tilted gold frame and page layout.
 window.addEventListener("load",()=>{
@@ -253,4 +471,3 @@ window.addEventListener("load",()=>{
 });
 </script>
 out.write_text(html, encoding="utf-8")
-print(f"Created updated website: {out}\nSize: {out.stat().st_size:,} bytes\nBased on: {src.name}")
